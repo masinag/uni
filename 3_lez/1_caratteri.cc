@@ -1,8 +1,8 @@
-// //
+//
 // Acquisire da tastiera un carattere e stamparlo
 // a video + inizializzare una variabile di tipo
 // carattere e stamparla a video
-// //
+//
 
 #include <iostream>
 using namespace std;

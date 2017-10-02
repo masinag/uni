@@ -19,25 +19,22 @@ int main(){
 
   if (a!=0){
     delta = b*b - 4*a*c;
-    if (delta > 0){
+    if (delta >= 0){
       s1 = (-b - sqrt(delta))/(2*a);
       s2 = (-b + sqrt(delta))/(2*a);
       cout << s1 << ", " << s2;
-    } else if (delta == 0) {
-      s1 = -b/(2*a);
-      cout << s1;
+    } else {
+      cout << "Nessuna soluzione";
+    }
+  } else if (b==0) {
+    if (c==0){
+      cout << "Infinite soluzioni";
     } else {
       cout << "Nessuna soluzione";
     }
   } else {
-    if (b==0 && c==0){
-      cout << "Infinite soluzioni";
-    } else if (b==0) {
-      cout << "Nessuna soluzione";
-    } else {
-      s1 = -c/b;
-      cout << s1;
-    }
+    s1 = -c/b;
+    cout << s1;
   }
 
   cout << endl;
