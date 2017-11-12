@@ -10,15 +10,14 @@
 using namespace std;
 
 int main(){
-  int i=0, penultimo=0, ultimo=1, fib=0;
+  int penultimo=0, ultimo=1, fib=0;
 
-  do {
+  for (int i=0; i<20; i++){
     penultimo = ultimo;
     ultimo = fib;
     fib = penultimo + ultimo;
     cout << setw(2) << i+1 << ". " << fib << endl;
-    i++;
-  } while (i<20);
+  }
   
 
   return 0;
