@@ -1,5 +1,5 @@
 // 1) scrivere un programma che calcoli i primi 20 numeri della 
-// successione di fibonacci:
+// successione di fibonacci usando una funzione:
 
 // F0=0;
 // F1=1;
@@ -9,7 +9,16 @@
 #include <iomanip>
 using namespace std;
 
+void fibonacci(int);
+
 int main(){
+  fibonacci(20);
+
+  return 0;
+}
+
+
+void fibonacci(int n){
   int i=0, penultimo=0, ultimo=1, fib=0;
 
   do {
@@ -18,8 +27,6 @@ int main(){
     fib = penultimo + ultimo;
     cout << setw(2) << i+1 << ". " << fib << endl;
     i++;
-  } while (i<20);
+  } while (i<n);
   
-
-  return 0;
 }
