@@ -4,10 +4,13 @@
 #include <iostream>
 using namespace std;
 
-const int DIM = 5;
+const int DIM = 15;
 
 void stampaArray(const char a[], int dim);
 bool inserisci (char array[], int& dim, int elemento);
+int trovaPos (char a[], int dim, char el);
+int trovaPos(char a[], int start, int end, char el);
+
 
 int main(){
   char comando, elemento;
@@ -16,9 +19,9 @@ int main(){
   int dim=0;
   cout << ">> i per inserire un carattere nell'array" << endl;
   do {
-    cout << ">> ";
-    cin >> comando;
-
+    // cout << ">> ";
+    // cin >> comando;
+    comando = 'i';
     switch(comando){
     case 'I': case 'i':
       cout << "Carattere: ";
@@ -46,8 +49,8 @@ bool inserisci (char a[], int& dim, int elemento){
   // se posso inserire l'elemento
   if(dim < DIM){
     // cerco la posizione in cui inserirlo
-    int i;
-    for(i=0; i<dim && a[i]<elemento; i++){}
+    int i = trovaPos(a, dim, elemento);
+    
     dim++;
     cerr << "Inserting " << elemento << " in pos " << i << endl;
     for(int j=dim-1; j>i; j--)
@@ -56,4 +59,20 @@ bool inserisci (char a[], int& dim, int elemento){
     elementoInserito = true;
   }
   return elementoInserito;
+}
+
+int trovaPos (char a[], int dim, char el){
+  if (dim==0) return 0;
+  return trovaPos(a, 0, dim-1, el);
+}
+
+int trovaPos(char a[], int start, int end, char el){
+  int pos = (end+start)/2;
+  if (start>end)
+    pos = start;
+  else if (a[pos] >= el)
+    pos=trovaPos(a, start, pos-1, el);
+  else if(a[pos] < el)
+    pos = trovaPos(a, pos+1, end, el);
+  return pos;
 }
