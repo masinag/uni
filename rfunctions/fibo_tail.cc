@@ -6,41 +6,44 @@ using namespace std;
 #include <cstdlib>
 
 long long fibo(int n);
-long long fibo(long long p, long long u, int n, int i);
+long long fibo(long long p, long long u, int n);
+bool checkN(int n);
 
 int main(int argc, char * argv[]){
   int n;
   bool inputValido = false;
   if (argc >= 2){
-    if (! (n = atoi(argv[1]) ))
-      cout << "Argomento non valido [uso: ./a.out n]" << endl;
+    if (! (n = atoi(argv[1]) ) || ! checkN(n) )
+      cout << "Argomento non valido [uso: ./a.out n > 0]" << endl;
     else inputValido = true;
   } else {
     while(!inputValido){
       cout << ">> ";
       cin >> n;
-      if (cin.fail()){
-	cout << "Input non valido: richiesto un numero itero" << endl;
+      if (cin.fail() || !checkN(n)){
+	cout << "Input non valido: richiesto un numero intero > 0" << endl;
 	cin.clear();
 	cin.get(); // leggo il carattere '\n'
       } else
 	inputValido = true;
     }
   }
-  cout << "fibonacci(" << n << ") = " << fibo(n);
+  if (inputValido)
+    cout << "fibonacci(" << n << ") = " << fibo(n) << endl;
 }
 
 long long fibo(int n){
   long long res;
-  if (n == 0 || n == 1)
-    res = 1;
-  else
-    res = fibo(1, 1, n, 2);
+  res = fibo(0, 1, n);
 }
 
-long long fibo(long long p, long long u, int n, int i){
-  if (i==n)
+long long fibo(long long p, long long u, int n){
+  if (n<=1)
     return p + u;
   else
-    return fibo(u, p+u, n, i+1);
+    return fibo(u, p+u, n-1);
+}
+
+bool checkN(int n){
+  return n > 0;
 }
