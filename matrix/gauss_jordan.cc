@@ -39,13 +39,13 @@ void stampaMatrice(const double m[][SIZE], int rows, int cols){
   }
 
 }
+
+// wrapper
 void gauss_jordan (double m[][SIZE], int rows, int cols){
   gauss_jordan(m, rows, cols, 0);
 }
 
 void gauss_jordan (double m[][SIZE], int rows, int cols, int row){
-  // trovo la prima colonna con un pivot
-  
   int r, c;
   bool pivotTrovato = trovaPivot(m, rows, cols, row, r, c);
   if (pivotTrovato) {
@@ -59,6 +59,11 @@ void gauss_jordan (double m[][SIZE], int rows, int cols, int row){
   }
 }
 
+/*
+  Cerca un pivot nella matrice m, dalla riga <row> in poi.
+  Gli indici dell'elemento sono r e c; restituisce true o false
+  a seconda che sia presente un pivot o meno.
+ */
 bool trovaPivot(double m[][SIZE], int rows, int cols, int row, int&r, int&c){
   bool pivotTrovato = false;
   for(c = 0; c < cols && !pivotTrovato; c++){
@@ -69,6 +74,7 @@ bool trovaPivot(double m[][SIZE], int rows, int cols, int row, int&r, int&c){
   return pivotTrovato;
 }
 
+// Scambia due righe di una matrice
 void scambia(double m[][SIZE], int cols, int r1, int r2){
   if (r1 != r2){
     for(int i=0; i<cols; i++)
@@ -82,20 +88,24 @@ void scambia(double& a, double&b){
   b = c;
 }
 
+// Annulla gli elementi della colonna c, a partire dalla riga <row + 1>
+// effettuando operazioni elementari Eij(mu)
 void annullaColonna(double m[][SIZE], int rows, int cols, int row, int c){
   for (int r = row+1; r < rows; r++){
-    // cout << "Sommo alla riga " << r << " la riga " << row
+    // cerr << "Sommo alla riga " << r << " la riga " << row
     //	    << " moltiplicata per " << -m[r][c]/(m[row][c]) << endl;
     somma(m, cols, r, row, -m[r][c]/(m[row][c]));
   }
 }
 
+// Somma alla riga r1, lambda*r2
 void somma(double m[][SIZE], int cols, int r1, int r2, double lambda){
   for (int c=0; c < cols; c++){
     m[r1][c] += m[r2][c]*lambda;
   }
 }
 
+// legge una matrice dal file passato come parametro dalla linea di comando
 void leggiMatrice(int argc, char * argv[], double m[][SIZE], int& rows, int& cols){
   
   if (argc < 2){
@@ -136,5 +146,9 @@ void leggiMatrice(int argc, char * argv[], double m[][SIZE], int& rows, int& col
 }
 
 void erroreFormato(){
-  cout << "Errore nel formato" << endl;
+  cerr << "Errore! Formato richesto: " << endl;
+  cerr << "righe colonne" << endl;
+  cerr << "<elementi prima   riga separati da uno spazio>" << endl;
+  cerr << "<elementi seconda riga separati da uno spazio>" << endl;
+  cerr << "..." << endl;
 }
