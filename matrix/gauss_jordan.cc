@@ -132,7 +132,7 @@ void leggiMatrice(int argc, char * argv[], double m[][SIZE], int& rows, int& col
   int r = 0, c = 0;
   
   while(r<rows && file >> el){
-    cout << "Read " << el << endl;
+    // cerr << "Read " << el << endl;
     if (c >= cols){
       c = 0; r+=1;
     }
