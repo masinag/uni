@@ -17,7 +17,6 @@ int main(int argc, char * argv[]){
     cout << "E' richiesto un argomento!" << endl;
     exit(0);
   }
-  
   char s[LUNGHEZZA];
   strncpy(s, argv[1], LUNGHEZZA);
   if (palindroma(s)){

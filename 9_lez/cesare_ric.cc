@@ -9,8 +9,8 @@ using namespace std;
 
 const int LUNGHEZZA = 20;
 
-void codifica(char destinazione, const char sorgente);
-void codifica(char destinazione, const char sorgente, int pos);
+void codifica(char destinazione[], const char sorgente[]);
+void codifica(char destinazione[], const char sorgente[], int pos);
 char caesar(char c);
 int main(int argc, char * argv[]){
   char sorgente[LUNGHEZZA], destinazione[LUNGHEZZA];
@@ -32,8 +32,15 @@ void codifica(char destinazione[], const char sorgente[], int pos){
     destinazione[pos] = caesar(sorgente[pos]);
     codifica(destinazione, sorgente, pos+1);
   } else {
-    destinazione[pos] = '\0'
+    destinazione[pos] = '\0';
   }
 }
 
-char caesar(char c){return c;} 
+char caesar(char c){
+  char res = c; 
+  if(c>='a' && c<='z')
+    res = (c - 'a' + 3) % 26 + 'a';
+  else if (c>='A' && c<='Z')
+    res = (c - 'A' +3) % 26 + 'A';
+  return res;
+} 

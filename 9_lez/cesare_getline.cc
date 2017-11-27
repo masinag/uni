@@ -15,6 +15,6 @@ int main(int argc, char * argv[]){
   cin.getline(sorgente, LUNGHEZZA);
   cout << sorgente << endl;
   
- //  caesar(destinazione, sorgente);
-//   cout << "Stringa codificata: " << destinazione << endl;
+  ca(destinazione, sorgente);
+  cout << "Stringa codificata: " << destinazione << endl;
 }

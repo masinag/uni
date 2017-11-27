@@ -12,7 +12,7 @@ using namespace std;
 #include <fstream>
 
 const int DIM = 4;
-const int LEN = 10;
+const int LEN = 11;
 const char DELIMITATORE = ',';
 
 void stampaMatrice(const int m[][DIM]);
@@ -33,23 +33,37 @@ int main(int argc, char * argv[]){
     exit(EXIT_FAILURE);
   }
 
-  char r[LEN];
-  int row;
-  int n;
+  char riga[LEN];
+  char parola[LEN];
+  int row=0;
   int col;
-  while (in.getline(r, LEN)){
+  int j=0;
+  in.getline(riga, LEN);
+  while (!in.eof() && row < DIM){
+    cout << "PERA" << endl;
     col = 0;
-    for(int i=0; i<strlen(r); i++){
-      if (r[i] == DELIMITATORE){
-	m[row][col] = atoi(r+i);
-      } else if(r[i] == '\n') {
-	row++;
+    cerr << riga << endl;
+    cerr << "row: " << row <<endl;
+    for(int i=0; i<strlen(riga) && col<DIM; i++){
+      cerr << "//"<<endl;
+      if(riga[i] == DELIMITATORE){
+	parola[j] = '\0';
+	cerr << "Writing " << parola << " into m[" << row << "]["<<col<<"]"<<endl;
+	m[row][col++] = atoi(parola);
+	j=0;
       } else {
-	col++;
+	parola[j++] = riga[i];
       }
     }
+    row++;
+    if(col<DIM){
+      cerr << row << ", " << col << endl;
+      parola[j]='\0';
+      m[row][col] = atoi(parola);
+      j=0;
+    }
+    in.getline(riga, LEN);
   }
-  cout << "STAMPO" << endl;
   stampaMatrice(m);
 }
 
