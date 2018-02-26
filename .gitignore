@@ -34,3 +34,6 @@
 # Temporary files
 *~
 makefile;
+/ldp1/1_lez/HelloWorldApp/nbproject/private/
+/ldp1/1_lez/HelloWorldApp/build/
+/ldp1/1_lez/HelloWorldApp/dist/
