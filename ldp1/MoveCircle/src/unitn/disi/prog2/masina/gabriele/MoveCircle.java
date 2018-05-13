@@ -38,6 +38,8 @@ public class MoveCircle extends Application {
     private boolean horizontal = true;
     @Override
     public void start(Stage primaryStage) {
+        
+        // Circle
         Circle c = new Circle(100, 100, RADIUS, Paint.valueOf("BLACK"));
         c.addEventHandler(MouseEvent.MOUSE_ENTERED, new EventHandler<MouseEvent>(){
             @Override
@@ -51,6 +53,7 @@ public class MoveCircle extends Application {
                 }
             }            
         });
+        // Button to move the circle
         Button btnMv = new Button();
         btnMv.setText("Move Circle");
         btnMv.setMinWidth(BTNWIDTH);
@@ -67,6 +70,7 @@ public class MoveCircle extends Application {
                 }
             }
         });
+        
         /* Button to switch horizontal/vertical movement */
         Button btnSwitch = new Button("Horizontal");
         btnSwitch.setMinWidth(BTNWIDTH);
@@ -85,19 +89,20 @@ public class MoveCircle extends Application {
             @Override
             public void handle(ActionEvent event) {
                 Platform.exit();
-            }
-            
+            }    
         });
         
+        /* Window with the circle*/
         Group root = new Group();
         root.getChildren().add(c);
-        
         Scene scene = new Scene(root, WIDTH, HEIGHT);
-        
         primaryStage.setTitle("Move circle");
         primaryStage.setScene(scene);
+        primaryStage.setX(0);
+        primaryStage.setY(0);
         primaryStage.show();
         
+        /* Window with the buttons */
         VBox btnbox = new VBox(OFFSET, btnMv, btnSwitch, btnClose);
         btnbox.setPadding(new Insets(OFFSET, OFFSET, OFFSET, OFFSET));
         
@@ -106,10 +111,10 @@ public class MoveCircle extends Application {
         Stage btnStage = new Stage();
         btnStage.setTitle("Buttons");
         Group btnGroup = new Group(btnbox, closebox);
-        
+        btnStage.setX(WIDTH);
+        btnStage.setY(0);
         btnStage.setScene(new Scene(new VBox(btnbox, closebox), WIDTH, HEIGHT));
-        btnStage.show();
-        
+        btnStage.show();        
     }
 
     /**
