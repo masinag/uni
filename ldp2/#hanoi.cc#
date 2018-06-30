@@ -1,0 +1,6 @@
+void hanoi (n, from, to, by) {
+  if n > 0{
+      move(n-1, from, by, to)
+    }
+	   
+}

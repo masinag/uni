@@ -105,6 +105,10 @@ public class Hanoi extends BorderPane {
                         showMessage("Pali di partenza e di arrivo non definiti!");
                     if(!gameField.move(fromPole, toPole))
                         showMessage("Impossibile appoggiare un disco su uno più piccolo!");
+                    else {
+                        topBar.resetFields();
+                        fromPole = toPole = null;
+                    }
                 }  else if (btn.getId().equals(HanoiButton.RESET)){
                     gameField.reset();
                     topBar.resetFields();
