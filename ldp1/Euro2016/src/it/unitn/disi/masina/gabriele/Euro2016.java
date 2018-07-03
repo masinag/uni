@@ -26,6 +26,9 @@ public class Euro2016 extends Application {
         primaryStage.setTitle(TITLE);
         primaryStage.setScene(scene);
         primaryStage.show();
+        
+        ControlWindow controlWindow = new ControlWindow(primaryStage, board);
+        controlWindow.show();
     }
 
     /**

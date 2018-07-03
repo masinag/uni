@@ -5,6 +5,7 @@
  */
 package it.unitn.disi.masina.gabriele;
 
+import javafx.scene.layout.HBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
@@ -16,11 +17,10 @@ public class VStripesFlag extends Flag {
 
     public VStripesFlag(Paint color1, Paint color2, Paint color3) {
         
-        
         Rectangle r1 = new Rectangle(WIDTH/3, HEIGHT, color1);
         Rectangle r2 = new Rectangle(WIDTH/3, HEIGHT, color2);
         Rectangle r3 = new Rectangle(WIDTH/3, HEIGHT, color3);
-        getChildren().addAll(r1, r2, r3);
+        getChildren().addAll(new HBox(r1, r2, r3));
     }
     
 }

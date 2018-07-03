@@ -6,6 +6,8 @@
 package it.unitn.disi.masina.gabriele;
 
 import javafx.geometry.Pos;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.scene.paint.Paint;
 import javafx.scene.shape.Rectangle;
 
@@ -17,8 +19,7 @@ public class CrossFlag extends Flag {
 
     private final static double CROSS_WIDTH = 2;
     public CrossFlag(Paint backColor, Paint crossColor) {
-        //setVgap(CROSS_WIDTH);
-        //setPrefColumns(3);
+        
         setStyle("-fx-background-color: red");
         
         //setAlignment(Pos.TOP_LEFT);
@@ -34,8 +35,10 @@ public class CrossFlag extends Flag {
         Rectangle c2 = new Rectangle(WIDTH, CROSS_WIDTH, crossColor);
         Rectangle c3 = new Rectangle(CROSS_WIDTH, height, crossColor);
        
-        getChildren().addAll(sq1, c1, r1,
-                c2, sq2, c3, r2);
+        VBox container = new VBox(new HBox(sq1, c1, r1),
+                                    c2,
+                                    new HBox(sq2, c3, r2));
+        getChildren().addAll(container);
     }
     
 }
