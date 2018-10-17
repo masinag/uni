@@ -35,6 +35,7 @@ public class MoveCircle extends Application {
     final static double WIDTH = 300;
     final static double HEIGHT = 200;
     final static double BTNWIDTH = 100;
+    final static double IMGDIM = 50;
     private boolean horizontal = true;
     @Override
     public void start(Stage primaryStage) {
@@ -83,7 +84,7 @@ public class MoveCircle extends Application {
             
         });
         /* Button to close the application */
-        Image icon = new Image(getClass().getResourceAsStream("close.png"), 50, 50, true, true);
+        Image icon = new Image(getClass().getResourceAsStream("close.png"), IMGDIM, IMGDIM, true, true);
         Button btnClose = new Button("", new ImageView(icon));
         btnClose.addEventHandler(ActionEvent.ACTION, new EventHandler<ActionEvent>(){
             @Override
