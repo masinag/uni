@@ -1,0 +1,31 @@
+watch -n1 'date'
+Executes date command and refreshes it every 1 second
+
+watch -n1 'date'
+Executes command in background
+
+ps -o pid,ppid,pgid,sid,uid,euid 21256
+shows info about process with pid 21256:
+	*pid: process id, univocal
+	*ppid: parent pid, pid of the process which created this process.
+		the root process is called "init". If the parent of a
+		process terminated and the process is still running, it is
+		adopted by init.
+	*pgid: process group id. It identifies a group of processes which can
+		interact closely. When a process creates a son, the son 
+		inherits the pgid of the parent.
+		Every group has a leader and the group is identified by the
+		pid of its leader.
+	*sid:  session id. A session is a set of groups defined to manage
+		its groups. Every group belongs to a session.
+		Every session has a leader group and is identified by the
+		gid of its leader. A leader cannot leave its group.
+	*ruid: real user id. User who runs the process.
+	*eiud: execution user id. User with which the process is executed.
+		Usually it coincides with ruid. For instance the command 
+		passwd is executed as root.
+		running ls -alh /usr/bin/passwd you can see it is a special
+		command since the file is shown in red.
+	
+kill -9 21256
+forces kill of process with pid 21256
