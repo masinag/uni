@@ -1,0 +1,106 @@
+* Analisi algoritmi
+
+Complessità: funzione da Dimensione input -> Tempo (numero di istruzioni elementari)
+
+Criteri di valutazione:
+- costo uniforme: dim input è il numero di elementi di cui è costituito es. dimensione array
+- costo logaritmico: dim numero di bit necessari per rappresentarlo es. Moltiplicazione numeri
+
+Funzione di costo: f: N -> R
+
+Notazioni:
+* O(g(n)) è l'insieme delle funzioni f(n) tali che Esiste c>0, m>=0 tali che
+    f(n) <= c*g(n) per ogni n >= m [f cresce al più come g]
+* Ω(g(n)) è l'insieme delle funzioni f(n) tali che Esiste c>0, m>=0 tali che
+    f(n) >= c*g(n) per ogni n >= m [f cresce almeno come g]
+* ϴ(g(n)) è l'insieme  delle funzioni f(n) tali che Esiste c1>0, c2>9, m>=0 tali che
+    c1*g(n) <= f(n) <= c2*g(n) per ogni n >= m [f cresce esattamente come g]
+    => f = ϴ(g(n)) e f = Ω(g(n))
+
+Complessità algoritmi vs Complessità problemi
+Es. Moltiplicazione numeri complessi di Gauss
+    (a + bi) * (c+di) = (ac - bd) + (ad + bc)i
+    => calcolo x = (a+b) * (c+d) = ac + ad + bc + bd,
+               y = ac, z = bd => 3 moltiplicazioni
+    => risultato: (y - z) + (x-y-z)i
+    => è possibile effettuare un numero di moltiplicazioni minore
+Es. Somma numeri binari
+    => non è possibile avere una complessità minore di O(n) perchè per assurdo
+        se si riuscisse a non guardare tutti i bit, allora esiste un bit che non
+        viene guardato. Quindi cambiando tale bit otterrei un risultato sbagliato.
+
+Un problema ha complessità O(f(n)) se esiste un algoritmo che lo risolvei in tempo Ω(f(n)).
+Un problema ha complessità Ω(f(n)) se tutti i possibili algoritmi che lo risolvono hanno
+complessità Ω(f(n)).
+Un problema ha complessità ϴ(f(n)) se trovo un algoritmo che lo risolva in tempo O(f(n))
+e dimostro che non esistono algoritmi migliori per risolvere tale problema.
+
+
+Es. Moltiplicazione di numeri binari
+* Algoritmo classico: ϴ(n²)
+* Algoritmo di Karatsuba: ϴ(n⅔)
+    Supponendo che X e Y siano composti entrambi da n cifre.
+    X = a*2^(n/2) + b
+    Y = c*2*(n/2) + d
+    => X * Y = ac * 2^n + (ad + bc) * 2^(n/2) + bd
+    Calcolando così avrei T(n) = 4*T(n/2) + n che per il master theorem ha complessità O(n^2).
+    => nessun vantaggio, costanti maggiori.
+    * Ma posso utilizzare un trucco. Calcolo M1 = (a+b) * (c+d) = ac + ad + bc + bd con costo
+        O(n) + T(n/2).
+        Calcolo M2 = ac, M3 = bd.
+        => Res = M2 * 2^n + (M1 - M2 - M3) * 2^(n/2) + M3.
+        Complessità: T(n) = 3T(n/2) + ϴ(n) = n^(log3) = n^1.58
+
+Es. Ordinamento
+    Selection Sort: Caso pessimo, medio, ottimo ϴ(n^2)
+    Insertion Sort: Caso pessimo(ordinato rev.) n^2, ottimo(ordinato) n, medio(torno indietro i/2 passi ogni ciclo) n^2
+    Merge Sort: basato su divide et impera, divido il vettore in due sottovettori ognuno grande n/2.
+                Ordino ricorsivamente le due metà, finchè ottengo un sottovettore di dimensione 1.
+                Infine, ottenute due metà ordinate, posso unirle più velocemente in tempo O(n).
+                Questo mi permette di ottenere un algoritmo di ordinamento che opera in tempo ϴ(nlogn) per ogni input.
+                Ricorrenza [Assumendo n=2^k]: T(n) = 2*T(n/2) + n => ϴ(n*logn)
+
+### ANALISI DI FUNZIONI ###
+* Espressioni polinomiali => f(n) = ϴ(n^k) dove k è l'esponente maggiore presente nell'elpressione.
+
+@PROPRIETÀ delle funzioni di costo
+* DUALITÀ: f(n) = O(g(n)) <=> g(n) = Ω(f(n))
+    Infatti f(n) <= c*g(n)
+            g(n) >= 1/c * f(n)
+* ELIMINAZIONE DELLE COSTANTI
+    f(n) = O(g(n)) <=> a*f(n) = O(g(n)), analog con omega
+    Infatti f(n) <= c*g(n) <==> a*f(n) <= a*c*g(n)
+
+* SOMMATORIA (SEQUENZA DI ALGORITMI)
+    f1 = O(g1), f2 = O(g2) => f1 + f2 = O(max(g1, g2))
+    f1 = Ω(g1), f2 = Ω(g2) => f1 + f2 = Ω(min(g1, g2))
+
+    Infatti f1 <=c1*g1, f2 <= c2*g2 ->
+            f1 + f2 <= c1*g1 + c2*g2 <= (c1+c2) * max(g1, g2)
+
+* PRODOTTO
+    f1 = O(g1), f2 = O(g2) => f1 * f2 = O(g1 * g2)
+    f1 = Ω(g1), f2 = Ω(g2) => f1 * f2 = Ω(g1 * g2)
+
+* SIMMETRIA
+    f = ϴ(g) <=> g = ϴ(f)
+
+* TRANSITIVITÀ
+    f = O(g), g = O(h) => f = O(h)
+
+@ ANALISI PER LIVELLI o DELL'ALBERO DI RICORSIONE
+"Srotolo" la ricorrenza in un albero i cui nodi rappresentano i costi ai vari livelli della ricorsione
+[Srotolo la ricorrenza direttamente (diiventa complesso) oppure disegno le chiamate ricorsive
+ai vari livelli con la rispettiva dimensione dell'input, il costo della chiamata e il numero di chiamate, quindi
+lo esprimo sotto forma di sommatoria]
+@ ANALISI PER SOSTITUZIONE o PER TENTATIVI
+Si cerca di "indovinare" una soluzione e si dimostra che è corretta tramite induzione.
+@METODO DELL'ESPERTO
+Master Theorem o teorema delle ricorrenze lineari con partizioni bilanciate
+Siano a>=1, b>=2 ∈ ℕ, c>0, β>=0 ∈ ℝ
+T(n) = {
+    a*T(n/b) + c*n^β se n >1
+    d                se n<= 1
+}
+definiamo α = log_b(a)
+...

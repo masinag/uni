@@ -6,7 +6,6 @@
 package it.unitn.disi.prog2.masina.gabriele;
 
 import javafx.event.ActionEvent;
-
 /**
  *
  * @author gabriele
