@@ -43,15 +43,15 @@ Proprietà:
 Metodi:
 + Lookup => restituisce il valore associato alla chiave [ tramite ricerca binaria ]
 + min => a) se ha un figlio sinistro -> minimo del sottoalbero sinistro
-         b) altrimenti è sè stesso
-+ max => uguale, vado a destra finchè ho un figlio destro...
+         b) altrimenti è sé stesso
++ max => uguale, vado a destra finché ho un figlio destro...
 + succ => a) se ho un figlio destro => minimo del sottoalbero destro
           b) altrimenti risalgo finché trovo un antenato per cui mi trovo nel suo sottoalbero sinistro.
 + prec => a) se ho un figlio sinistro => massimo del sottoalbero sinistro
-          b) altrimenti risalgo fichè trovo un antenato per cui mi trovo nel suo sottoalbero destro.
+          b) altrimenti risalgo finché trovo un antenato per cui mi trovo nel suo sottoalbero destro.
 + insert(k, v, u) => 0) se u == Nil => u = new Tree(k, v)...
                      a) se la k == u.key => u.value = v
-                     b) altrimentise k<u.key() => isert(k, v, u.left)
+                     b) altrimenti se k<u.key() => insert(k, v, u.left)
 + remove => a) il nodo non ha figli => lo elimino e basta [non crea problemi]
             b) il nodo ha un solo figlio => attacco il figlio al padre del nodo [mantenendo l'ordinamento]
             c) il nodo ha 2 figli => trovo il successore di u [min sottoalbero destro] che non ha figlio sinistro
@@ -80,7 +80,7 @@ VINCOLI SULLA COLORAZIONE
 1) la radice è nera
 2) tutte le foglie sono nere
 3) entrambi i figli di un nodo rosso sono neri
-4) ogni cammino semplice da un nodo u ad una delle foglie contenute nel suo sottalbero
+4) ogni cammino semplice da un nodo u ad una delle foglie contenute nel suo sottoalbero
    contiene lo stesso numero di nodi neri
 
 @ ALTEZZA NERA b(v) di un nodo v : numero di nodi neri lungo ogni cammino da v ad una foglia
@@ -92,7 +92,7 @@ Ben definite per i vincoli sulla COLORAZIONE
 # Nota: l'altezza dell'albero può essere al più 2*b(v) [caso pessimo BRBRBRB...]
         => nel caso pessimo ho un'altezza di 2*log(n) = ϴ(log(n))
 
-@ ROTAZIONE: movimento dei nodi all'interno dell'albero non violando l'oridnamento.
+@ ROTAZIONE: movimento dei nodi all'interno dell'albero non violando l'ordinamento.
   [disegno]. Viene utilizzato per mantenere bilanciato un albero all'inserimento di un nuovo nodo
 @@@ INSERIMENTO @@@
 -> quando inserisco un nodo lo coloro di rosso
