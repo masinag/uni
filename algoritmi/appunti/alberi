@@ -1,0 +1,117 @@
+### ALBERI ###
+@ Albero radicato [ def. Grafo]:
+Insieme di nodi e insieme di archi orientati che connettono coppie di nodi, con le
+seguenti proprietà:
+* Un nodo è designato come radice
+* ogni nodo a parte la radice ha esattamente un arco entrante
+* Esiste un cammino unico dalla radice ad ogni nodo
+* L'albero è connesso
+
+@ Albero radicato [def. ricorsiva]:
+È dato da:
+* un inseme vuoto oppure
+* una radice e zero o più sottoalberi, ognuno dei quali è un albero radicato.
+  La radice è connessa alla radice di ogni sottoalbero con un arco orientato.
+
+@ profondità di un nodo: lunghezza dela cammino semplice dalla radice al nodo (# di archi)
+@ livello: insieme dei nodi alla stessa profondità
+@ altezza albero: profondità massima delle sue foglie
+
+@ Albero binario:
+Albero radicato in cui ogni nodo ha al più due figli, identificati come destro e sinistro.
+
+@ Visita di un albero:
+  Strategia per visitare tutti i nodi di un albero.
+  * DFS - si visitano ricorsivamente tutti i suoi sottoalberi ( visito la radice prima/dopo/in mezzo )
+  * BFS - visito l'albero per livelli
+
+@ Memorizzazione:
+  * Come Vettore dei figli [statico / dinamico]
+  * Come lista di figli (primo figlio ha  puntatore al suo fratello successivo)
+  * Come vettore dei padri [vettore in cui ogni nodo contiene l'indice del padre]
+
+### ALBERI BINARI DI RICERCA ###
+Esempio di utilizzo: dizionari [ ogni nodo contiene una coppia chiave-valore ]
+
+Idea ispiratrice: portare la ricerca dicotomica negli alberi [ le chiavi devono
+avere un ordinamento ]
+
+Proprietà:
+* le chiavi contenute nel sottoalbero sinistro di u sono minori della chiave contenuta in u
+* le chiavi contenute nel sottoalbero destro di u sono maggiori della chiave contenuta in u
+-> permettono facilmente di implementare la ricerca binaria
+Metodi:
++ Lookup => restituisce il valore associato alla chiave [ tramite ricerca binaria ]
++ min => a) se ha un figlio sinistro -> minimo del sottoalbero sinistro
+         b) altrimenti è sè stesso
++ max => uguale, vado a destra finchè ho un figlio destro...
++ succ => a) se ho un figlio destro => minimo del sottoalbero destro
+          b) altrimenti risalgo finché trovo un antenato per cui mi trovo nel suo sottoalbero sinistro.
++ prec => a) se ho un figlio sinistro => massimo del sottoalbero sinistro
+          b) altrimenti risalgo fichè trovo un antenato per cui mi trovo nel suo sottoalbero destro.
++ insert(k, v, u) => 0) se u == Nil => u = new Tree(k, v)...
+                     a) se la k == u.key => u.value = v
+                     b) altrimentise k<u.key() => isert(k, v, u.left)
++ remove => a) il nodo non ha figli => lo elimino e basta [non crea problemi]
+            b) il nodo ha un solo figlio => attacco il figlio al padre del nodo [mantenendo l'ordinamento]
+            c) il nodo ha 2 figli => trovo il successore di u [min sottoalbero destro] che non ha figlio sinistro
+                                     aka metto al suo posto l'eventuale figlio destro, quindi "stacco il
+                                     successore" e lo metto al posto del nodo.
+                                     Correttezza: il succ di s è >= ai nodi nel sottoalbero sinistro di u
+                                     e <= dei nodi nel sottoalbero destro => può essere sostituito a u.
+                                     Per il resto si ricade nei casi precedenti
+Costi: tutte le operazioni sono confinate ai nodi posizionati lungo un cammino semplice
+dalla radice ad una foglia => Tempo O(h) [ CASO PESSIMO h = n[lista], OTTIMO h = log(n) [bilanciato]]
+
+### ALBERI BINARI DI RICERCA BILANCIATI ###
+Si può dimostrare che se gli inserimenti sono in oridne casuale l'altezza media è log(n)
+In realtà si utilizzano tecniche per mantenere l'albero bilanciato.
+
+@ FATTORE DI BILANCIAMENTO: β(v) di un nodo v è la massima differenza di altezza tra i
+sottoalberi di v.
+
++++ ALBERI RED-BLACK +++
+Un albero Red-Black è un ABR in cui:
+1) ogni nodo è colorato di rosso o nero
+2) le chiavi sono memorizzate solo nei nodi interne
+3) le foglie sono costituite da nodi speciali Nil [nodi sentinella speciali, per evitare puntatori a nil]
+
+VINCOLI SULLA COLORAZIONE
+1) la radice è nera
+2) tutte le foglie sono nere
+3) entrambi i figli di un nodo rosso sono neri
+4) ogni cammino semplice da un nodo u ad una delle foglie contenute nel suo sottalbero
+   contiene lo stesso numero di nodi neri
+
+@ ALTEZZA NERA b(v) di un nodo v : numero di nodi neri lungo ogni cammino da v ad una foglia
+  del suo sottoalbero [v escluso, foglia inclusa].
+@ ALTEZZA NERA DI UN ALBERO RB: altezza nera della sua radice
+
+Ben definite per i vincoli sulla COLORAZIONE
+
+# Nota: l'altezza dell'albero può essere al più 2*b(v) [caso pessimo BRBRBRB...]
+        => nel caso pessimo ho un'altezza di 2*log(n) = ϴ(log(n))
+
+@ ROTAZIONE: movimento dei nodi all'interno dell'albero non violando l'oridnamento.
+  [disegno]. Viene utilizzato per mantenere bilanciato un albero all'inserimento di un nuovo nodo
+@@@ INSERIMENTO @@@
+-> quando inserisco un nodo lo coloro di rosso
+-> trovo la sua posizione come negli ABR
+-> potrei aver violato il vincolo 3 [ nodo rosso ha un figlio rosso ]
+    -> in caso cerco di ripristinare il vincolo 3 spostando le violazioni verso l'alto,
+       rispettando il vincolo 4. Al termine coloro la radice di nero.
+
+CASI:
+1. Il nodo da inserire t è la radice => coloro di nero
+2. il padre di t è nero => non violo nessun vincolo
+3. t rosso, p rosso, z rosso => n nero. coloro n di rosso e z, p di nero, quindi
+   sistemo n (t=n).
+4a. t rosso, p rosso, z nero, t figlio destro di p, p figlio sinistro di n =>
+    rotazione a sinistra su p => devo sistemare p, ricado nei casi 5a/b.
+5a. t rosso, p rosso, z nero, t figlio sx di p, p figlio sx di n =>
+    rotazione a dx su n, coloro p nero e n rosso.
+
+Complessità:
+O(log(n)) per inserire (scendendo)
+O(1) per l'inserimento
+O(log(n)) per aggiustare (risalendo il percorso verso l radice)

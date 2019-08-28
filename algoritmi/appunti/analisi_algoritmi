@@ -61,14 +61,14 @@ Es. Ordinamento
                 Ricorrenza [Assumendo n=2^k]: T(n) = 2*T(n/2) + n => ϴ(n*logn)
 
 ### ANALISI DI FUNZIONI ###
-* Espressioni polinomiali => f(n) = ϴ(n^k) dove k è l'esponente maggiore presente nell'elpressione.
+* Espressioni polinomiali => f(n) = ϴ(n^k) dove k è l'esponente maggiore presente nell'espressione.
 
 @PROPRIETÀ delle funzioni di costo
 * DUALITÀ: f(n) = O(g(n)) <=> g(n) = Ω(f(n))
     Infatti f(n) <= c*g(n)
             g(n) >= 1/c * f(n)
 * ELIMINAZIONE DELLE COSTANTI
-    f(n) = O(g(n)) <=> a*f(n) = O(g(n)), analog con omega
+    f(n) = O(g(n)) <=> a*f(n) = O(g(n)), analogamnete con omega
     Infatti f(n) <= c*g(n) <==> a*f(n) <= a*c*g(n)
 
 * SOMMATORIA (SEQUENZA DI ALGORITMI)
@@ -90,7 +90,7 @@ Es. Ordinamento
 
 @ ANALISI PER LIVELLI o DELL'ALBERO DI RICORSIONE
 "Srotolo" la ricorrenza in un albero i cui nodi rappresentano i costi ai vari livelli della ricorsione
-[Srotolo la ricorrenza direttamente (diiventa complesso) oppure disegno le chiamate ricorsive
+[Srotolo la ricorrenza direttamente (diventa complesso) oppure disegno le chiamate ricorsive
 ai vari livelli con la rispettiva dimensione dell'input, il costo della chiamata e il numero di chiamate, quindi
 lo esprimo sotto forma di sommatoria]
 @ ANALISI PER SOSTITUZIONE o PER TENTATIVI
@@ -104,3 +104,92 @@ T(n) = {
 }
 definiamo α = log_b(a)
 ...
+@ MASTER THEOREM ESTESO, PARTIZIONI BILANCIATE DI ORDINE COSTANTE
+
+
+### ANALISI AMMORTIZZATA ###
+Tecnica di analisi di complessità che considera il tempo richiesto per eseguire, nel CASO PESSIMO,
+un'intera SEQUENZA di operazioni su una struttura dati.
+L'idea è che esistono operazioni più o meno costose. Se le operazioni costose sono poco frequenti
+allora il loro costo poù essere ammortizzato da quelle meno costose.
+
+Metodi: Aggregazione, Accantonamenti e Potenziale
+* Aggregazione - Si calcola il costo di n operazioni e si divide il costo per n
+Es. contatore binario k bit [vettore di booleani] - n operazioni di incremento
+Incremento: si nota che la cifra meno significativa viene cambiata ad ogni incremento,
+la seconda ogni 2, ecc. Quindi il costo per effettuare n operazioni è dato da:
+n + n/2 + n/4 + ... = sommatoria da 1 a k di n/2^i = n * sum 1/2^i che per k che tende all'infinito
+è uguale a 2*n. Quindi ogni operazione ha costo ammortizzato 2, ossia costante.
+
+* Accantonamenti - Alle operazioni vengono assegnati costi ammortizzati potenzialmente
+distinti per le varie operazioni che possono essere maggiori/minori del loro costo effettivo.
+Alle operazioni meno costose si assegna un costo maggiore di quello effettivo, aggiungendo un credito.
+Tale credito sarà poi sottratto al costo effettivo delle operazioni più costose per ottenerne il costo
+ammortizzato. Nota: la somma dei costi ammortizzati deve essere maggiore di quella dei costi
+effettivi.
+Es. contatore binario k bit [vettore di booleani] - n operazioni di incremento
+Incremento: partendo da sinistra metto tutti gli 1 a 0 finchè trovo uno 0. Quindi
+cambio quello 0 in 1. Si nota che ad ogni operazione trasformo un solo 0 in 1.
+Quindi, se ogni volta che cambio uno 0 in 1 "pago" anche il costo per ricambiarlo in 0
+in un incremento successivo, ad ogni operazione assegno costo ammortizzato 2.
+[Nota che la somma è sempre maggiore di quella dei costi effettivi].
+
+* Potenziale - Si associa alla struttura dati D una funzione di potenziale Φ(D),
+  incrementata dalle operazioni meno costose e decrementata da quelle più costose.
+  Il costo ammortizzato è dato da costo effettivo + la variazione di potenziale tra l'i-esima
+  operazione e quella precedente. Perciò si dimostra che il costo ammortizzato di n operazioni è dato
+  dal costo effettivo + la ddp tra l'n-esima operazione e la prima.
+Es. Contatore binario. Il valore della funzione di potenziale è dato dal numero di bit 1 presenti nel
+contatore.
+Sia t il numero di bit 1 incontrati a partire da quello meno significativo. Poichè ad ogni incremento
+tutti questi andranno a 0 e si aggiungerà un solo 1:
+* il costo effettivo è t + 1
+* la variazione di potenziale è 1 - t
+* il costo ammortizzato è 2
+All'inizio ho 0 bit a 1 => Φ(D_0) = 0, alla fine ne avrò >= 0, quindi la ddp è non negativa,
+quindi il costo ammortizzato è una sovrastima di quello effettivo
+
++++ VETTORI DINAMICI +++
+Si alloca un vettore di una certa dimensione detta capacità. L'inserimento in fondo costa O(1).
+Problema: la capacità è costante, può essere insufficiente.
+Soluzione: una volta riempito il vettore, se ne alloca uno più grande [ quanto? ] e si copia
+il contenuto all'interno di quello nuovo.
+--- INSERIMENTO ---
+Come incrementare?
+a) raddoppio           b) aggiungo incremento costante
+ a) dimensione iniziale 1
+  costo c_i = {
+              i se i = 2^k +1
+              1 altrimenti
+            }
+  T(n) = sum of c_i from 1 to n = sum of 1 from 1 to n + sum of 2^i from 0 to ⌊㏒(n)⌋
+       <= n + sum of 2^i from 0 to ㏒(n) = n + 2^(log(n) + 1) -1 = n + 2n -1 = ϴ(n)
+  b) dimensione iniziale d, incremento d
+  c_i = {
+    i se i mod d = 1
+    1 altrimenti
+  }
+  T(n) = n + sum d*j from 1 to ⌊n/d⌋ <= n + d * (n/d)*(n/d +1)/2 =
+       = n + n*(n/d + 1)/2 = ϴ(n²)
+  => molto peggiore, ogni operazione costa n !
+
+--- CANCELLAZIONE ---
+Quando decrementare la dimensione?
+Fattore di carico α = dim/capacità
+-> se contraggo guando α = 1/2, se inserisco subito devo raddoppiare... non una buona idea
+-> Se dimezzo quando α = 1/4, dimezzando diventerà 1/2.
+
+Usiamo una funzione di potenziale che:
+- vale 0 all'inizio e subito dopo una espansione/contrazione
+- cresce fino a raggiungere il numero di elementi presenti nella tavola quando α
+  aumenta fino a 1 o diminuisce fino a 1/4.
+
+  Φ = {
+        2*dim - capacità se α >= 1/2
+        capacità/2 - dim se α <= 1/2
+      }
+  Nota: α = 1/2 => phi = 0              [dopo espansione/contrazione]
+        α =   1 => phi = capacità = dim [ prima di espansione ]
+        α = 1/4 => phi = dim            [prima di contrazione]
+
+    Prima di contrazione/espansione il potenziale è sufficiente per pagare il loro costo.
