@@ -1,0 +1,148 @@
+### GRAFI ###
+Un grafo orientato è una coppia G=(V, E) dove:
+* V è un insieme di nodi (o vertici)
+* E è un'insieme di coppie ordinate di nodi dette archi
+
+Un grafo non orientato è una coppia G=(V, E) dove:
+* V è un insieme di nodi (o vertici)
+* E è un'insieme di coppie non ordinate di nodi dette archi
+
+Un vertice v è detto ADIACENTE  a u se esiste un arco (u, v)
+L'arco (u, v) è detto incidente da u a v
+
+Grafo non orientato
+m <= n*(n-1)/2 = O(n^2)
+Grafo orientato
+m <= n*(n-1) = O(n^2)
+
+@ Un grafo con un arco fra tutte le coppie di nodi è detto completo
+@ Un grafo si dice SPARSO se m = O(n), m = O(n*log(n))
+@ Un grafo si dice denso se m = Ω(n²)
+
+Grafi non orientati
+@ Il GRADO di un nodo è il numero di archi incidenti su di esso
+Grafi orientati
+@ Il GRADO ENTRATE/USCENTE di un nodo è il numero di archi incidenti su/da di esso
+
+@ CAMMINO: di lunghezza k è una sequenza di nodi u_o,..., u_k tale che (u_i, u_i+1)∈E
+           ∀ i ∈ {0,.., k-1}
+
+### MEMORIZZAZIONE GRAFI
+ A) matrici di adiacenza
+    m[u][v] = 1 se (u, v) ∈ E, 0 altrimenti => spazio n² [per grafi densi]
+    se il grafo è non orientato posso memorizzarne soltanto metà es.diagonale superiore
+    se il grafo è pesato invece di 1 metto il peso
+ B) liste di adiacenza
+    G.adj(u) = {v | (u, v) ∈ E} => spazio an + bm [per grafi sparsi]
+    se il grafo è pesato devo memorizzare nella lista anche il peso dell'arco
+
+### VISITE
+Dato un grafo e un vertice r, visitare una sola volta tutti i nodi del grafo che possono
+essere raggiunti da quel nodo
+
+# BFS - visita per livelli: prima la radice, poi i nodi a distanza 1, poi a distanza 2, ...
+      -> genera un albero breadth-first che contiene tutti i cammini minimi dalla radice
+         a tutti gli altri nodi. Basata su coda
+         [ appicazioni ERDOS ]
+         Complessità: O(n+m) perchè ogni nodo viene estratto dalla coda una volta sola,
+         e quando viene estratto vengono visitati tutti gli archi uscenti da esso
+         => T(n) = n + Σ out_d(u) = n + m
+
+# DFS - visita il nodo e ricorsivamente tutti i nodi adiacenti
+        -> utilizzata per visitare il grafo, non risolve un problema particolare.
+           genera una foresta di alberi depth-first. Basata su stack implicito o esplicito
+           [ se il il grafo è molto grande ho una profondità di ricorsione limitata ].
+           Complessità O(n + m)
+           Appicazioni:
+           -- componenti connesse su grafo non orientato
+           @ RAGGIUNGIBILITÀ: un nodo v è raggiungibile da un nodo v se esiste almeno un cammino da u a v.
+           @ un grafo NON ORIENTATO è CONNESSO sse ogni suo nodo è raggiungibile da ogni altro
+             suo nodo.
+             @ un grafo G' è una COMPONENTE CONNESSA di G sse G' è un sottografo CONNESSO e MASSIMALE di G.
+             @ G' è sottografo di G se V'⊂V ∧ E'⊂ E
+             @ G' è massimale sse non esiste G'' tale che G'' è sottografo connesso di G e G'' e G''
+               è più grande di G' (aka G' ⊂ G'' ⊂ G)
+             Identifico una componente connessa ogni volta che termino una dfs, ossia la dfs che parte da
+             un nodo u raggiunge tutti e solo i nodi appartenenti alla cc di u. Quindi faccio partire la
+             dfs dal prossimo nodo non visitato.
+           -- individuazione ciclo
+           @ un CICLO di lunghezza k > 2 (k>=2 in grafin orientati) è una seq. di nodi u_0, ..., u_k tale
+             che (u_i, u_i+1) ∈ E, 0 <=i < k e u_0 = u_k
+           @ un grafo non orientato che non contiene cicli è detto aciclico.
+           @ un grafo orientato che non contiene cicli è detto DAG
+           * Un grafo non orientato ha un ciclo sse durante una DFS visito un nodo già visitato [ che non sia
+           il nodo da cui provengo ]
+           * in un grafo orientato:
+              @ l'albero di copertura DFS è un albero formato dai nodi del grafo e dagli archi che attraverso
+                durante la dfs da un nodo marcato ad uno non marcato.
+                Gli archi (u, v) non inclusi possono essere:
+                + archi in avanti se u è un antenato di v nella visita
+                + archi indietro se u è un discendente di v nella visita
+                + archi di attraversamento altrimenti
+              Ogni volta che passo su un nodo non visitato aggiorno il discovery time.
+              Una volta terminata la visita ricorsiva a partire da tale nodo aggiorno il suo finish time.
+              [ad ogni chiamata time viene incrementato]. Data tale visita DFS e una coppia di nodi u, v:
+              + se gli intervalli [dt[u], ft[u]], [dt[v], ft[v]], sono non sovrapposti, allorau, v non sono
+                discendenti uno dell'altro.
+              + se il primo include il secondo, v è un discendente di u.
+              + se il secondo include il primo, v è un antenato di v.
+
+              Nella visita di un arco (u, v) allora se dt[v] == 0 => arco dell'albero,
+              se ft[v] == 0 e dt[u] > dt[v] arco all'indietro, ft[v] > 0 e dt[v] > dt[u] in avanti,
+              di attraversamento altrimenti
+
+              Un grafo orientato è aciclico sse non esistono archi all'indietro.
+              Dim. se: ∃ un ciclo allora dato u il primo nodo del ciclo visitato e sia
+              (v, u) un arco del ciclo. Il cammino che connette u a v verrà visitato, (v, u) è un arco
+              all'indietro.
+              solo se: se esiste un arco all'indietro (u, v) => allora esiste un cammino da v a u e un
+              arco da u a v, ossia un ciclo
+            -- ordinamento topologico
+              @ Dato un DAG G, un ORDINAMENTO TOPOLOGICO di G è un ordinamento lineare dei nuoi nodi
+                tale che se (u, v) ∈ E, allora u compare prima di v nell'ordinamento.
+
+              # Esistono più ordinamenti topologici.
+              # Applicazioni: date una serie di operazioni che dipendono una dall'altra
+                trovare un ordine corretto che permetta di rispettare le dipendenze.
+
+              Eseguo una DFS in cui aggiungo un nodo in testa ad una lista [stack] a finish-time.
+              Funziona perchè quando un nodo è "finito" tutti i suoi discendenti sono stati scoperti e
+              aggiunti alla lista. Aggiungendolo in testa alla lista, il nodo è in ordine corretto.
+            -- componenti fortemente connesse
+              @ un grafo orientato è FORTEMENTE CONNESSO sse ogni suo nodo è raggiungibile da ogni altro suo nodo.
+              @ una COMPONENTE FORTEMENTE connessa di un grafo G è un sottografo di G connesso e massimale.
+
+              # non posso applicare direttamente l'algoritmo per i grafi non orientati, devo essere "fortunato"
+                a partire dal nodo giusto perchè funzioni -> devo forzare la "fortuna".
+              @ ALGORITMO DI KOSARAJU
+              + Trovo un ordinamento topologico di G S
+              + calcolo il grafo trasoposto Gt
+              + eseguo una visita DFS utilizzando cc scorrendo i nodi nell'ordine dato da S. Le componenti
+                connesse rappresentano le componenti fortemente connesse di G. [ visito in ordine inverso
+                di tempo di fine della prima visita ]
+
+              # osservazione: utilizzo topsort su un grafo potenzialmente ciclico. Tuttavia sfrutto la proprità
+                per cui: se un arco (u,v) non appartiene a un ciclo, allora u viene prima di v in S, altrimenti
+                gli archi di un ciclo appaiono in un qualche ordine (ininfluente) in S.
+              # complessità O(n+m) data dalle due visite e dalla costruzione del grafo trasposto
+
+              # DIMOSTRAZIONE CORRETTEZZA
+              @ Dato un grafo G, il GRAFO DELLE COMPONENTI C(G) = (Vc, Ec):
+                * Vc  = C1,...Ck dove Ci è la i-esima SCC di G
+                * Ec = {(Ci, Cj) | ∃ (ui, uj) ∈ E t.c. ui ∈ Ci, uj ∈ Cj}
+              @ Il grafo delle componenti di G è il trasposto del grafo delle componenti di G trasposto.
+              @ Il grafo delle componenti è aciclico perché se ci fosse un ciclo avremmo una SCC più grande
+                di quelle trovate ma ciò è assurdo.
+
+              @ dt(C)   = min {dt(u) | u ∈ C}
+                ft(C)   = max {ft(u) | u ∈ C}
+              @ TEOREMA: Siano C e C' due distine SCC di G. Se c'è un arco (C, C') ∈ Ec, allora
+                ft(C) > ft(C').
+              @ COROLLARIO: Siano Cu e Cv due SCC distinte di G. Se c'è un arco (u, v) ∈ Et tale che
+                u ∈ Cu e v ∈ Cv, allora ft(Cu) < ft(Cv).
+              Perciò se Cu e Cv sono connesse da un arco (u, c) ∈ Et,
+                dal corollario ft(Cu) < ft(Cv).
+                dall'algoritmo, la visita di Cv inizierà prima della visita di Cv
+              Non esistono cammini da Cv a Cu in Gt (altrimenti avrei un ciclo)
+                Dall'algoritmo, la visita di Cv non raggiungerà Cu, perciò cc assegnerà correttamente
+                gli identificatori delle componenti ai nodi

@@ -1,0 +1,37 @@
+### Insiemi realizzati con vettori booleani [BITSET]
+dati m oggetti (interi), noti a priori, per verificare se un elemento appartiene a un insieme
+è possibile assegnare un valore booleano ad ogni oggetto, utilizzando un vettore di booleani
+
+Vantaggi: semplice, efficiente verificare l'appartenenza
+Svantaggi: memoria ϴ(m), alcune operazioni inefficienti (es. unione, intersezione)
+
+### Insiemi con liste/vettori non ordinati
+Ricerca, inserimento, cancellazione O(n)
+Unione, intersezione, differenza O(n*m)
+
+### Insiemi con liste/vettori ordinati
+ricerca O(n) liste, O(logn) vettori
+inserimento, cancellazione O(n)
+Unione intersezione, differenza O(n) [analogo a merge]
+
+### ALBERI BILANCIATI se serve ordinamento (tutto log(n))
+### HASH TABLE se non serve ordinamento     (O(1), minimo O(m))
+
+### BLOOM FILTERS (UNISCE VANTAGGI DI BITSET E DI TABELLA HASH)
+Bitset: poca memoria
+Tabella hash: dinamica
+
+Bloom filters: dinamici, bassa occupazione di memoria (10 bit/oggetto)
+Svantaggi: niente cancellazioni, risposta probabilistica [se restituisce false non è presente,
+            se restituisce true potrebbe o meno essere presente (FALSI POSITIVI)]
+Si cerca un trade-off tra occupazione di memoria e probabilità di falsi positivi
+data ε la probabilità di fp, i bloom filter richedono 1.44log(1/ε) bit/elemento
+Utilizzi: chrome contiene un db degli URL dei siti con malware(~650 mila)
+         Se risponde true si fa una query al db centralizzato (prob. errore 10^(-5))
+         Si evita molto traffico in rete
+
+@implementazione:
+  n oggetti, vettore booleano di m bit inizializzatoa false
+  k funzioni di hash h1,..., hk  : U -> {0,...,m-1}
+  all'inserimento "accendo" k bit dati dagli ahsk calcolati con le k funzioni della chiave
+  alla ricerca verifico che tutti gli indici dati dai k hash siano a 1

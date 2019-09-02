@@ -1,0 +1,152 @@
+### HASHING ###
+@ dizionario : struttura dati utilizzata per memorizzare coppie chiave-valore,
+               dove le coppie sono indicizzate in base alla chiave.
+               Operazioni: insert, lookup, remove
+# possono essere implementati in vari modi: array non ordinato(ordinato), lista,
+  alberi RB -> al massimo mi permettono di ottenere costi logaritmici
+# l'implementazione ideale è tramite tabelle hash che permettono di svolgere le
+  tre operazioni in tempo costante.
+  Principio: si sceglie una funzione hash che mappa ogni chiave k in un intero h(k),
+  che definisce l'indice del vettore in cui la coppia chiave-valore viene memorizzata.
+  Tale vettore viene detto tabella hash.
+
+Dato l'insieme U delle possibili chiavi di dimensione u e il vettore hash T di dimensione
+m, la funzione di hash h:U->{0,..m-1}
+
+Problema: quando due valori appartenenti a U vengono mappati nello stesso indice, si
+dice che è avvenuta una collisione. Idealmente vogliamo una funzione di hash senza
+collisioni.
+
+# Casi particolari:
+  * U è già un sottoinsieme piccolo di ℕ (es. giorni dell'anno)
+    ->utilizzo come funzione hash la funzione identità
+    Problema: u molto grande -> troppa memoria
+              u non grande ma ne utilizzo un piccolo sottoinsieme -> spreco memoria
+
+@ Una funzione di hash h si dice PERFETTA se è iniettiva, ovvero dati due elementi
+  distinti di U, la loro immagine è diversa.
+
+Tuttavia lo spazio delle chiavi è spesso grande, sparso e non conosciuto, il che rende
+quasi impossibile ottenere una funzione hash perfetta.
+Si cerca quindi di minimizzare il numero delle collisioni, cercando funzioni che
+distribuiscano in modo uniforme le chiavi negli indici 0,..., m-1
+
+@ UNIFORMITÀ SEMPLICE
+Sia P(k) la probabilità che una chiave k sia inserita nella tabella
+La probabilità che una chiave finisca della cella i:
+Q(k) sommatoria di k ∈ U tale che h(k) = i di P(k)
+Una funzione hash gode della proprietà di UNIFORMITÀ SEMPLICE se per ogni i
+Q(i) = 1/m
+es. U = [0, 1[, e ogni chiave ha la stessa probabilità, allora H(k) = ⌊k*m⌋
+soddisfa l'uniformità  semplice
+
+# problema: la distribuzione delle probabilità deve essere nota -> utilizzo di tecniche euristiche
+
+* Assumo che le chiavi possano essere tradotte in valori numerici naturali [anche tramite
+rappresentazione binaria].
+
+-- METODI "PESSIMI"
+@ ESTRAZIONE
+m = 2^p
+H(k) = int(b) dove b è un sottoinsieme di p bit presi da bin(k)
+problema: selezionare p bit da suffisso/prefisso genera collisioni con alta probabilità,
+          anche prenderli "in mezzo" può generare facilmente collisioni.
+
+@ XOR
+m = 2^p
+H(k) = int(b), dove b è dato dalla somma modulo due bit a bit (XOR) di sottoinsiemi di p bit di k
+problema: permutazioni della stessa stringa portano facilmente a collisioni.
+
+-- METODI ABBASTANZA BUONI
+@ METODO DELLA DIVISIONE
+m dispari (meglio se numero primo, oppure distanti da potenze di 2 e di 10)
+H(k) = int(k) mod m
+problema: avere tabelle di dimensione numeri primi non è il massimo, non va bene
+m = 2^p(prendo i p bit meno significativi), m = 2^p -1 permutazioni di stringhe con
+set di caratteri 2^p hanno lo stesso valore hash
+
+@ METODO DELLA MOLTIPLICAZIONE
+m qualsiasi (meglio se potenza di 2)
+C costante reale 0 < C < 1 (meglio se irrazionale)
+i = int(k)
+H(k) = ⌊m*(C*i - ⌊C*i⌋)⌋
+
+problema: questo metodo da risultati buoni ma non garantisce uniformità semplice.
+
+Nella realtà si utilizzano metodi più complessi che danno risultati migliori
+
+### GESTIONE DELLE COLLISIONI
+Se trovo una collisione:
+* aggiungo stutture dati al vettore (LISTA DI TRABOCCO)
+* trovo una soluzione alternativa (INDIRIZZAMENTO APERTO)
+Obiettivo: ottenere complessità O(1) nel caso medio
+
+@ LISTE DI TRABOCCO
+Le chiavi con lo stesso valore di hash vengono memorizzate in una lista. La cella
+h(k) contiene il puntatore alla testa della lista/vettore.
+
+n = numero di chiavi memorizzate
+m = capacità tabella
+α = n/m fattore di carico
+I(α) = numero medio di accessi alla tabella per la ricerca con insuccesso
+S(α) = numero medio di accessi alla tabella per la ricerca con successo
+
+Caso pessimo:
+insert: ϴ(1), lookup, remove: O(n)
+
+Caso medio:
+Assumiamo la funzione di hash con uniformità semplice, h = ϴ(1)
+-> Liste/vettori lunghi in media α
+I(α) = ϴ(1) + α
+S(α) = ϴ(1) + α/2
+Se m = ϴ(n) => α = O(1)
+problema: struttura dati "complessa"
+
+@ INDIRIZZAMENTO APERTO
+Idea: memorizzare tutte le chiavi nella tabella stessa, ogni slot contiene una
+chiave oppure Nil. Se lo slot prescelto è utilizzato, se ne cerca uno alternativo.
+Per la ricerca, si cerca nello slot prescelto e in quelli alternativi finchè non trovo
+la chiave oppure Nil.
+
+@ ISPEZIONE: esame di uno slot durante la ricerca.
+
+Funzione hash h: Ux{0,..., m-1} -> {0,..., m-1}
+                    nr.ispezione   indice vettore
+@ Una SEQUENZA DI ISPEZIONE [H(k, 0),..., H(k, m-1)] è una PERMUTAZIONE degli indici
+{0, .., m-1}. Non vogliamo esaminare gli slot più di una volta.
+
+# 0 <= α <= 1. Bisogna assicurarsi che la tabella non vada in overflow.
+
+### Tecniche di ispezione
+@ HASHING UNIFORME: situazione ideale in cui ogni chiave ha la stessa probabilità di avere come seq.
+di ispezione una qualsiasi delle m! permutazioni.
+[difficile da implementare]
+
+Tecniche più diffuse:
+* Ispezione lineare: H(k, i) = (H1(k)+ h*i) mod m => determinata dal primo elemento, m seq. di ispezione
+  possibile.
+  PROBLEMA: agglomerazione primaria: tendono a formarsi lunghe sott-sequenze occupate che tendono a
+  diventare sempre più lunghe, perchè uno slot vuoto preceduto da i slot pieni viene riempito con
+  probabilità (i+1) / m => crescono i tempi medi di ricerca e cancellazione
+* Ispezione quadratica: H(k, i) = (H1(k) + h*i^2) mod m => le ispezioni successive alla prima hanno
+  un offset che cresce quadraticamente nel numero di ispezione.
+  In questo modo due chiavi hanno sequenze identiche sse la loro ispezione iniziale è identica
+  (AGGLOMERAZIONE SECONDARIA). Il grosso problema è che questa tecnica non genera una permutazione.
+  Al massimo m seq.di ispezione distinte.
+* Doppio hashing: H(k, i) = (H1(k) + i*H2(k)) mod m
+  Due funz. di hashing: H1 prima ispezione, H2 offset delle ispezioni successive
+  Ogni casella da origine a m possibili ispezione: m?2 permutazioni
+  Per garantire una permutazione comleta, H2 deve essere relativamente primo con m
+
+### Cancellazione: non è possibile semplicemente sostituire la chiave da cancellare con un Nil
+    => sostituito con un valore speciale deleted:
+        Nella ricerca trattato come slot pieno, nell'inserimento come vuoto.
+Svantaggio: il tempo di ricerca non dipende più solo da alpha ma anche dal numero di cancellazioni
+[con tante cancellazioni più diffuse liste di trabocco]
+
+Complessità: al crescere di alpha, l'indirizzamento aperto cresce molto rapidamente, tendendo a m.
+              Soluzione: raddoppio la dimensione al superamento di una certa soglia, riducendo il fattore
+              di carico. Devo reinserire tutte le chiavi in posizioni potenzialmente diverse( faccio mod 2m).
+              In questo modo rimuovo tutti gli elementi deleted.
+              Il costo ammortizzato è sempre costante.
+              Nelle implementazioni reali t_α ~ 0.5
