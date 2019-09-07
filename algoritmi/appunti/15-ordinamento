@@ -1,0 +1,47 @@
+### PROBLEMA DELL'ORDINAMENTO
+Gli algoritmi che abbiamo visto sono tutti basati sul confronto <= tra valori.
+Quelli migliori hanno complessità O(nlog(n)), alcuni Ω(n) in casi speciali (già ordinati)
+
+@ Dimostramo che qualunque algoritmo di ordinamento BASATO SU CONFRONTI  ha un complessità Ω(n*log(n))
+
+  * Sia A un qualunque algoritmo di ordinamento basato su confronti.
+  * Assumiamo ce tutti i valori siano distinti (senza perdita di generalità)
+  * A può essere rappresentato tramite un albero di decisione, che rappresenta i confronti fra gli elementi
+
+  * Il cammino radice-foglia in un albero di decisione rappresenta una sequenza di confronti eseguiti
+    dall'algoritmo
+  * L'altezza dell'albero di decisione rappresenta il numero di confronti eseguiti nel caso pessimo
+
+  * LEMMA 1: Un albero di decisione per l'ordinamento di n elementi contiene almeno n! foglie
+    [Siccome ognuna delle n! permutazioni può essere soluzione dell'input, devo avere una foglia per ogni
+      possibile permutazione]
+  * LEMMA 2: Sia T un albero binario in cui ogni nodo interno ha esattamente 2 figli e sia k il numero
+    di foglie, l'altezza dell'albero è almeno log(k) [log(k) se è perfettamente bilanciato]
+
+  * TEOREMA: Il numero di confronti per ordinare n elementi nel caso peggiore è Ω(nlog(n))
+    [log(n!) = Ω(nlog(n))]
+
+### Algoritmi di ordinamento non basati su confronti
+* Spaghetti sort: O(n) ma deve essere n-parallelo per trovare il massimo in O(1)
+* Counting Sort: quando i numeri da ordinare sono compresi tra 1 e k (o range definito)
+      Costruisco un array B[1...k] che conta il numero di volte che ogni valore compare in A
+      Ricolloca in A i valori ottenuti.
+      Complessità O(n + k + (n+k)) = O(n+k). Se k è O(n) -> O(n), altrimenti O(k), pseudo-polinomiale
+* Pigeonhole Sort:
+      Se i valori non sono interi ma record associati a una chiave da ordinare
+      Inseriamo gli elementi in un vettore di liste concatenate, infondo alla lista indicata dalla chiave
+      Quindi Ricostruisco A come nel counting sort.
+      O(n+k)
+* Bucket sort: Se i valori reali sono uniformemente distribuiti nell'intervallo [0,1) [oppure normalizzati
+  nell'intervallo ma uniformemente distribuiti]
+  Divido l'intervallo in n sottointervalli di dimensione 1/n detti bucket. Applico il principio del Pigeonhole sort
+  con le liste, aspettandomi 1 elemento in ogni bucket.
+  * Ordino ogni bucket con insertion sort, quindi ricostruisco A
+
+### STABILITÀ
+@ Un algoritmo di ordinamento è detto stabile se preserva l'ordine iniziale tra due elementi con la stessa
+  chiave.
+  Stabili: Insertion, Merge, pigeonhole
+  Non stabili: Heap, quick
+  Qualunque algoritmo può essere reso stabile, associando a ogni elmento la posizione iniziale e ordinando
+  per valore, indice

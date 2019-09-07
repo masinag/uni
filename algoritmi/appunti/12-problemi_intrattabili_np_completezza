@@ -1,0 +1,146 @@
+### Teoria NP-completezza ###
+Oltre a problemi che hanno soluzione in tempo polinomiale, esistono problemi interessanti che
+richiedono tempo esponenziale o addirittura non sono risolvibili
+
+Esistono problemi per cui non è chiaro se esiste un algoritmo polinomiale. Questi problemi sono tutti
+legati: se ne esistesse uno risolvibile in tempo polinomiale, allora lo sarebbero tutti!
+
+
+@ Un PROBLEMA ASTRATTO è una relazione binaria R ⊆ I x S tra un insieme di istanze I e un insieme
+  di soluzioni S.
+  Es. shortest path:
+        * Istanze (V,E,u,v), soluzioni: sequenze di nodi.
+@ Tipologie di problemi:
+  * Ottimizzazione: trovare la soluzione migliore
+  * Ricerca: trovare una soluzione ammissibile
+  * Decisione: data un'istanza verificare se soddisfa o meno una proprietà.
+
+  Ottimizzazione => decisione, non decisione => non ottimizzazioni [risoluzione efficiente]
+
+@ Dati due problemi decisionali R1 ⊆ I1 x {0,1}, R2 ⊆ I2 x {0,1},
+  R1 è RIDUCIBILE POLINOMIALMENTE a R2 (R1 <=_p R2) se esiste una funzione f: I1 -> I2 tale che:
+  * f è calcolabile in tempo polinomiale
+  * per ogni istanza x ∈ I1 e ogni soluzione s ∈ {0,1}, (x,s) ∈ R1 <=> (f(x), s) ∈ R2
+
+* COLORAZIONE DI GRAFI
+  Dati un grafo non orientato G e un insieme di colori C, una COLORAZIONE dei vertici è un assegnamento
+  f: V -> C tale che nessuna coppia di nodi adiacenti ha lo stesso colore
+  Ottimizzazione: restituire la colorazione che richiede il numero minimo di colori
+  Decisione: dato un valore k , determinare se esiste una k-colorazione
+
+* SUDOKU
+  Data una matrice n² x n² divisa in sottomatrice n x n, inserire i numeri da 1 a n² in modo tale che nessun
+  numero compaia più di una volta in ogni riga, colonna e sottomatrice.
+  Decisione: determinare se esiste un assegnamento valido.
+
+  # È possibile ridurre in tempo polinomiale Sudoku a graph-coloring dove ogni casella è un nodo ed è
+    collegata a quelle della stessa riga, colonna, sottomatrice. I colori sono {1...n}
+    => SUDOKU <=_p GRAPH-COLORING
+
+* INDEPENDENT-SET
+  Dato un grafo non orientato, un insieme S ⊆ V è in INSIEME INDIPENDENTE se e solo se nessun arco
+  unisce due nodi in S.
+  Es. insieme vuoto, insieme di un elemento...
+  Ottimizzazione: restituire il più grande insieme indipendente
+  Decisionale: dato un valore k, determinare se ne esiste uno grande almeno k
+
+* VERTEX-COVER
+  Dato un grafo non orientato G e un insieme S ⊆ V è una COPERTURA DI VERTICI se e solo se ogni arco
+  ha almeno un estremo in S.
+  Ottimizzazione: trovare la copertura più piccola
+  Decisione: dato un valore k, determinare se ne esiste una grande al più k
+
+  # S è un independent-set se e solo se V-S è un vertex-cover
+    I due problemi sono equivalenti
+
+* SAT
+  Dato un insieme V contenente n variabili
+  * un letterale è una variabile v oppure la sua negazione
+  * una clausola è una disgiunzione di letterali
+  * una formula in forma normale congiuntiva + una congiunzione di clausole
+
+  Decisione: data una formula in CNF, decidere se esiste una assegnazione di valori di verità che
+  renda l'espressione vera. [la formula è SODDISFACIBILE]
+
+* 3-SAT
+  SAT in cui le clausole hanno esattamente 3 letterali
+  3-SAT <= SAT
+  È possibile ridurre 3-SAT a INDEPENDENT SET:
+  Per ogni clausola, aggiungo 3 nodi collegati fra loro. Per ogni letterale che compare in modo normale
+  e negato, aggiungo un arco fra essi.
+  La formula è soddisfacibile se e solo se è possibile trovare un independent-set di dimensione k
+  [k numero di clausole]
+
+  # inoltre vale N-SAT <=_p SAT perchè ogni n-clausola può essere ridotta a una o più 3-clausole,
+    es (x1 V x2 V x3 V x4) = (x1 V x2 V z) ∧ (x3 V x4 V !z)
+  Quindi SAT <= 3-SAT <= INDEPENDENT-SET <= VERTEX-COVER
+
+### CLASSI ℙ, ℙ-SPACE
+Dati un problema di decisione R e un algoritmo A che lavora in tempo f_s(n), A risolve R se
+restituisce s su un'istanza x se e solo se (x,s) ∈ R.
+
+@ CLASSI DI COMPLESSITÀ
+  Data una qualunque funzione f(n) chiamiamo:
+  * 𝕋𝕀𝕄𝔼(f(n)) l'insieme dei problemi decisionali risolvibili da un algoritmo che lavora in tempo
+    O(f(n))
+  * 𝕊ℙ𝔸ℂ𝔼(f(n)) l'insieme dei problemi decisionali risolvibili da un algoritmo che lavora in spazio
+    O(f(n))
+
+@ La CLASSE ℙ è la classe dei problemi decisionali risolvibili in tempo polinomiale nella dimensione
+  n dell'istanza in ingresso:
+    ℙ = ∪ 𝕋𝕀𝕄𝔼(n^c) con c da 0 a ∞
+@ La CLASSE ℙ𝕊ℙ𝔸ℂ𝔼 è la classe dei problemi decisionali risolvibili in spazio polinomiale nella
+  dimensione n dell'istanza.
+    ℙ𝕊ℙ𝔸ℂ𝔼 = ∪ 𝕊ℙ𝔸ℂ𝔼(n^c) con c da 0 a ∞
+
+# Nota ℙ ⊆ ℙ𝕊ℙ𝔸ℂ𝔼
+
+@ Dato un problema decisionale R e un'istanza di input x tale che (x,true) ∈ R, un CERTIFICATO è
+  un insieme di informazioni che permette di provare che (x,true) ∈ R
+
+  Es. SAT - un assegnamento di verità alle variabili della formula
+      GRAPH-COLORING: un'associazione nodo-colore
+      INDEPENDENT-SET: un sottoinsieme di V di k elementi
+
+      Questi certificati hanno una dimensione polinomiale nella dimensione dell'input
+
+@ La CLASSE ℕℙ è la classe dei problemi che ammettono un certificato verificabile in tempo polinomiale
+  Es. SAT, GRAPH-COLORING, INDEPENDENT-SET
+
+  Esempi di algoritmi non appartenenti a ℕℙ [ si ritiene ]
+  * Quantified Boolean Formula: generalizzazione di SAT in cui ad ogni variabile possono essere
+    applicati quantificatori universali e esistenziali
+    Es. ∀x∃y∃z. ((x∨y)∧z)
+@ Alternativamente la CLASSE ℕℙ è l'insieme dei problemi che possono essere risolti da una macchina
+  di Turing non deterministica ["prende sempre la scelta giusta"] in tempo polinomiale
+
+### RELAZIONI FRA PROBLEMI
+# Lemma: se R1 <=_p R2 e R2 ∈ ℙ allora R1 ∈ ℙ
+
+  Infatti Tf(n) = O(n^k_f) il tempo necessario a trasformare l'input tramite f,
+          T2(n) = O(n^k_2) il tempo necessario per risolvere R2
+  => T1 = O(n^(k_f*k_2) perché f potrebbe trasformare l'input in un input di grandezza n^k_f,
+  comunque polinomiale.
+
+@ Un problema decisionale R si dice ℕℙ-hard se ogni problema Q ∈ ℕℙ è riducibile polinomialmente a R
+@ Un problema decisionale R si dice ℕℙ-completo se appartiene a ℕℙ e ℕℙ-hard
+
+ℙ = ℕℙ???? Se esistesse un problema ℕℙ-completo appartenente a ℙ
+
+# SAT è ℕℙ-completo
+  Quindi per quanto abbiamo visto lo sono anche 3-SAT, INDEPENDENT-SET, VERTEX-COVER
+
+Altri problemi ℕℙ-completi:
+  * Clique (CRICCA) dato n grafo non orientato e un intero k, esiste un sottoinsieme di k nodi tutti
+    mutualmente adiacenti?
+  * TSP - Commesso viaggiatore date n città, le distanze tra esse e un intero k, è possibile partire da
+    una città, attraversare ogni città esattamente una volta e tornare alla città di partenza,
+    percorrendo una distanza non superiore a k?
+  * Programmazione lineare 0/1: risolvere un sistema lineare di disequazioni tra interi
+  * Copertura esatta di insiemi: Dato un insieme e una collezioni di sottoinsiemi, individuare una
+    sottocollezione che partizioni l'insieme?
+  * Zaino [non è polinomiale!]
+  * Partizione insieme in due insiemi di somma uguale
+  * Dato un insieme, esiste un sottoinsieme di somma k
+  * Circuito hamiltoniano
+  

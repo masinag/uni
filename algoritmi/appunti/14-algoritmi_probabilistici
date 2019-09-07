@@ -1,0 +1,112 @@
+### ALGORITMI PROBABILISTICI
+Algoritmi dove il calcolo della probabilità è applicato non ai dati di input (caso medio quicksort,
+funzioni hashing) ma ai dati di output:
+* Algoritmi corretti, il cui tempo di funzionamento è probabilistico LAS-VEGAS
+* Algoritmi la cui correttezza è probabilistica MONTECARLO
+
+### ALGORITMI MONTECARLO
+# TEST DI PRIMALITÀ
+  @ piccolo teorema di Fermat
+    per ogni numero primo n e ogni b ∈ [2...n-1]
+      bⁿ⁻¹ mod n = 1
+
+  * Test di primalità di Fermat (1)
+    b = random(2,n-1)
+    return bⁿ⁻¹ mod n == 1
+
+    L'algoritmo non è corretto in quanto restituisce True anche per numeri non primi
+  * Test di primalità di Fermat (1)
+    for i=1 to k
+      b = random(2,n-1)
+      if bⁿ⁻¹ mod n != 1
+        return false
+    return true
+
+    Un po' meglio del precedente, ma sempre sbagliato. Inoltre esistono numeri di Carmichael
+    che sono composti e vale ∀b∈ [2...n-1], bⁿ⁻¹ mod n = 1
+
+  * Test di Miller-Rabin
+    basato su mcd e caratteristiche dei numeri primi...
+    Rabin ha dimostrato che se n è composto, allora ci sono almeno 3/4(n-1) valori in [1...n-1] per
+    i quali una delle condizioni da verificare è falsa.
+    -> La probabilità di risposta errata è 1/4
+    Tuttavia...
+
+    for i=1 to k
+      b = random(2,n-1)
+      if isComposite(n,b)
+        return false
+    return true
+
+    La complessità è molto bassa O(k*log²n* loglogn * logloglogn)
+    * La probabilità di errore è (1/4)ᵏ
+
+
+# ESPRESSIONE POLINOMIALE NULLA
+  Data un'espressione polinomiale p in n variabili, determinare se p è identicamente nulla.
+  -> gli algoritmi basati su semplificazioni sono molto complessi
+
+  * Si genera una n-upla di valori v1...vn
+  * Si calcola x = p(v1...vn):
+    - se x != 0 false
+    - altrimenti potrebbe essere id. nulla
+  * Se ogni valore vi è un valore intero compreso fra 1 e 2d, dove d è il grado del polinomio,
+    allora la probabilità di errore non supera 1/2
+  * Ripetendo k volte, si riduce la probabilità di errore a (1/2)ᵏ
+
+### ALGORITMI LAS-VEGAS
+
+# PROBLEMA DELLA SELEZIONE
+  Dato un array A contenente n valori e un valore 1<=k<=n trovare l'elemento che occuperebbe la posizione
+  k se l'array fosse ordinato
+  La mediana è un sottoproblema con k = n/2
+  * Ordino il vettore e guardo a n/2 O(nlog(n))
+  * Per k piccoli, posso costruire uno heap O(n)  e eliminare k minimi O(log(n))
+    -> O(n+klog(n)), se k = O(n/logn) -> O(n) ma per k = n/2 non va bene
+
+  @ Approccio divide et impera simile a quicksort, ma essendo un problema di ricerca, basta cercare solo
+    in una delle partizioni.
+
+  * j = pivot(A,start, end) [espresso rispetto all'intero vettore]
+    q = j - start + 1 [k è espresso rispetto all'inizio del sottovettore]
+    if k == q
+      return A[j]
+    else if k < q
+      return selection(A, start, j-1, k)    [cerco a sinistra]
+    else
+      return selection(A, j+1, end, k-q)
+
+  @ CASO PESSIMO: vettore già ordinato T(n) = T(n-1) + n = O(n²)
+    CASO OTTIMO: T(n) = T(n/2) + n = O(n)
+    CASO MEDIO: Assumiamo che pivot restituisca con la stessa probabilità una qualsiasi
+                posizione j del vettore A
+                T(n) = n - 1 + 1/n * ∑T(max{q-1, n-q}) | q da 1 a n
+                     <= n-1 + 2/n∑T(q) | q da n/2 a n-1
+                ... si dimostra T(n) = ϴ(n)
+
+                Possiamo forzare l'assunzione scambiando il primo elemento con uno  casuale!
+                Questo accorgimento vale anche per quicksort, che quindi nel caso medio è O(n*log(n))
+  -> è un algoritmo Las-Vegas
+
+  * Supponiamo di avere un algoritmo black-box che ritorni la mediana in O(n).
+    Possiamo usarlo per risolvere il problema della selezione utilizzandolo per fare in modo
+    di dividere esattamente il problema usando la mediana come pivot. -> deterministico O(n)
+
+  * Possiamo "rilassare" le pretese. Supponendo di avere un algoritmo che restituisca un valore che
+    dista al più 3/10 dalla mediana, potremmo utilizzarlo comunque per la selezione ottenendo O(n)
+
+  @ Algoritmo deterministico in tempo O(n) [fattori moltiplicativi alti, meglio quello probabilistico]:
+    * Suddivido i valori in gruppi di 5 elementi S₁,...,Sₙ﹨₅)
+    * Trovo il mediano Mᵢ di ogni gruppo Sᵢ in tempo costante [con 6 confronti]
+    * Tramite una chiamata ricorsiva trovo il mediano m dei mediani
+    * Usa m come pivot e richiama selection sull'array.
+    * Quando la dimensione scende sotto una certa dimensione, uso l'ordinamento per trovare il mediano
+
+    Qual è la complessità?
+      - la prima chiamata ricorsiva viene chiamata su n/5 elementi,
+      - la seconda al massimo su 7/10 * n elementi
+          Infatti: Ogni mediana di un gruppo di 5 è maggiore o uguale di almeno 3 elementi.
+                  La mediana delle mediane è maggiore o uguale di (n/5)/2 elementi, ognuno >= di almeno
+                  3 elementi, quindi di 3 * n/10 elementi
+      - Nel caso pessimo, devo controllare l'altra parte, lunga 7/10n
+        => T(n) = T(n/5) + T(7/10n) + 11/5 n

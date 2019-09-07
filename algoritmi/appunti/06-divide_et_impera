@@ -1,0 +1,81 @@
+### DIVIDE ET IMPERA ###
+Tre fasi:
+* Divide: divisi il sotto-problema in sotto-problemi più piccoli indipendenti
+* Impera: Risolvi i sotto-problemi ricorsivamente
+* Combina: "!unisci le soluzioni dei sotto-problemi"
+
+
+# TORRI DI HANOI
+  Dati 3 pioli e n dischi impilati in ordine crescente sul piolo di sinistra,
+  impilarli in ordine decrescente su quello di destra muovendo un disco alla volta
+  senza mai impilare un disco su uno più piccolo
+
+  hanoi(n, src, dest, middle)
+    if n= 1
+      print(src->dest)
+    else
+      hanoi(n-1, src, middle, dest)
+      print(src->dest)
+      hanoi(n-i, middle, dest, src)
+
+  Divide: mi riduco a un problema più piccolo (n-1)
+  Questa soluzione è ottima: T(n) = 2T(n-1) + 1 = Θ(2ⁿ)
+
+# QUICKSORT
+  Algoritmo di ordinamento basato su divide et impera
+  Caso medio: O(n*log(n))
+  Caso pessimo: O(n²) ma fattori moltiplicativi bassi, non richiede memoria addizionale,
+                esistono euristiche [e non] per evitare il caso pessimo
+
+  Dato un vettore A[1...n] e degli indici 1 <= start <= end <= n
+  DIVIDE
+  * sceglie un valore p ∈ A[start...end] detto pivot
+  * sposta gli elementi del vettore in modo che:
+      ∀i ∈[start...j-1]: A[i] <= p
+      ∀i ∈[j+1...  end]: A[i] >= p
+      A[j] = p. L'indice j viene calcolato opportunamente
+  IMPERA
+  * ordina i due sottovettori A[start...j-1], A[j+1...  end] richiamando Quicksort
+  COMBINA
+  * nulla, il vettore è già ordinato
+
+  Complessità: perno() = ϴ(n)
+                Quicksort() = ??? Dipende dalla posizione j del perno
+
+                * Partizionamento peggiore:
+                  Il vettore di dimensione n viene diviso in due sotto-vettori grandi 0 e n-1
+                  T(n) = T(0) + T(n-1) + ϴ(n) = T(n-1) + ϴ(n) = ϴ(n²)
+                  Si verifica quando il vettore è ordinato in modo crescente o descescente.
+                * Partizionamento migliore:
+                  Divido il vettore in due sotto-vettori di dimensione n/2
+                  T(n) = 2T(n/2) + ϴ(n) = ϴ(n*㏒(n))
+                  Quando il perno è la mediana
+                * Caso medio: il caso medio è molto più vicino al caso pessimo che al caso peggiore
+                  es Partizionamento 9-a-1 o 99-a-1 hanno comunque complessità log-lineare
+                  Tuttavia i fattori moltiplicativi diventano importanti.
+                  -> Nel caso medio si alternano partizionamenti bilanciati ad altri pessimi, i primi
+                    "dominano" i secondo
+
+# MOLTIPLICAZIONE DI MATRICI
+  C = A x B, cij = ∑aik * bkj for j from 1 to n [colonne di A = righe di B = n]
+
+  Dividiamo le matrici n x n in 4 matrici n/2 x n/2
+  A = [A11, A12       B = [B11, B12
+       A21, A22]           B21, B22]
+
+  C = [A11xB11 + A12xB21    A11xB12 + A12xB22
+       A21xB11 + A22xB21    A21xB12 + A22xB22 ]
+  T(n) = { 1 se n= 1
+            8T(n/2) + n² } = ϴ(n³)
+  ALGORITMO DI STRASSEN:
+  Il principio generale è simile a quello di Karatsuba, che permette di eseguire 7 moltiplicazioni
+  invece di 8, ottenendo come equazione
+  T(n) = { 1 se n= 1
+           7T(n/2) + n² } = ϴ(n^(㏒_2(7))) = ϴ(n^2.81)
+
+# GAP: indice i tale che V[i-1] < V[i] in un vettore tale che V[1] < V[n]
+    * Se V[1] < V[n], allora V contiene almeno un GAP
+      [per assurdo, se non ci fosse V[1] >= V[2] >= ... >= V[n], assurdo]
+    * Se l'elemento in mezzo è maggiore di V[n], lo cerco in V[1...n/2]
+      Altrimenti V[n/2] <= V[1] < V[n], lo cerco in V[n/2...n]
+      L'algoritmo termina quando ho 2 elementi, i = n

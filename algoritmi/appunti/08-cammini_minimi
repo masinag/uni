@@ -1,0 +1,152 @@
+### CAMMINI MINIMI ###
+Dato un grafo orientato G = (V,E), un nodo sorgente s e una funzione di peso w:W->R
+Trovare un cammino da s a u per ogni nodo u∈V, il cui costo sia minimo tra tutti i cammini
+da s a u.
+Il COSTO DEL CAMMINO è dato dalla somma dei pesi degli archi che lo compongono
+Possibilità:
+* CAMMINI MINIMI SORGENTE SINGOLA: da s a tutti i nodi
+* TRA UNA COPPIA DI VERTICI: si risolve il punto precedente e si estrae il cammino richiesto,
+  non si conoscono algoritmi migliori.
+* TRA TUTTE LE COPPIE DI VERTICI: Soluzione basata su programmazione dinamica
+
+@ Pesi: possono essere solo positivi / positivi e negativi, interi / reali
+
+# CAMMINI MINIMI - SORGENTE SINGOLA
+Si rappresentano i cammini minimi come un albero dei cammini minimi radicato in s
+contenente tutti i nodi di V.
+Si noti che è un albero in quanto non esiste al più un cammino da un nodo a un altro, quello minimo.
+Questo fatto può essere sfruttato per definire una sottostruttura ottima.
+
+Una soluzione ammissibile può essere descritta da un albero di copertura T radicato in s e da un vettore
+di distanza d, i cui valori d[u] rappresentano il costo del cammino da s a u in T.
+
+# Teorema di Bellman
+Una soluzione ammissibile è ottima se e solo se:
+* d[v]  = d[u] + w(u,v)        per ogni arco (u,v) ∈ T
+* d[v] <= d[u] + w(u,v)        per ogni arco (u,v) ∈ E
+
+Dimostrazione
+=> ) Sia T una soluzione ottima e (u,v) ∈ E
+    * se (u,v) ∈ T, allora d[v] = d[u] + w(u,v)
+    * altrimenti, d[v] <= d[u] + w(u,v) altrimenti esisterebbe un cammino da s a v più corto
+      di quello in T, assurdo
+
+<=) Supponiamo che valgano le condizioni di Bellman e che il cammino da s a u non sia ottimo.
+    Allora esiste un altro cammino tale che d'[u] < d[u]
+    Sia d'[v] la distanza da s a un nodo v che appare in tale cammino
+    Poichè d'[s] = d[s] = 0, ma d'[u] < d[u], esiste un arco (h,k) per cui d'[h] >= d[h]
+    e d'[k] < d[k]. [il cammino per k è più corto ma quello per h è >= ]
+    Per costruzione d'[k] = d'[h] + w(h,k) [in C' arrivo a k attraverso h],
+    per ipotesi d[k] <= d[h] + w(h,k) [in C ci arrivo con un cammino più corto]
+    Ma quindi
+    d'[k] = d'[h] + w(h,k) >= d[h] + w(h,k) >= d[k] [ esiste un nodo k per cui in C' ci arrivo
+    con un costo minore rispetto a C, ma ciò è assurdo per ipotesi 2]
+
+Algoritmo:
+  d[s] = 0, d[x] = +∞
+  Finchè esiste (u,v) t.c. d[u] + G.w(u,v) < d[v]:
+    d[v] = d[u] + w(u,v)
+    p[v] = u
+Algoritmo generico
+  StrutturaDati S; S.add(s)
+  while not s.empty()
+    u = S.extract()
+    b[u] = false
+    foreach v ∈ G.adj(u)
+      if d[u] + w(u,v) < d[v]
+        if not b[u]
+          S.add(v);
+          b[v] = true;
+        else
+          ... aggiorna ...
+        T[v] = u
+        d[v] = d[u] + w[u,v]
+  return (T,d)
+
+Implementazioni:
+  # Dijkstra: utilizza come struttura dati una coda con priorità basata su vettore non ordinato
+    Inizializzazione O(n) per inserire con priorità ogni elemento
+    Estrazione minimo : devo cercarlo in tutto il vettore O(n)
+    Inserimento in coda: O(1) modificando la priorità
+    Aggiornamento: O(1) modificando la priorità
+    Logica: ogni volta che estraggo un nodo esso ha la distanza minima con cui può essere raggiunto
+            in quanto i pesi sono non negativi.
+    Dimostrazione correttezza per induzione su k numero di nodi estratti:
+      k=1) d[s] = 0 è minimo perchè non ci sono pesi negativi
+      k-1 => k) Quando viene estratto il k-esimo nodo u, d[u] dipende dai k-1 già estratti
+                Non può dipendere dai nodi ancora da estrarre, che hanno d[x] >= d[u]
+                Quindi d[u] è minimo e u non verrà più reinserito perchè non ci sono distanze negative
+    @ Costi: 1*O(n) + O(n)*O(n) + O(n)*O(1) + O(m) * O(1) = O(n²) [ m = O(n²) ]
+
+  # Johnson: con coda con priorità basata su vettore heap
+    @ Costi: 1*O(n) + O(n) * O(log(n)) + O(n) * O(log(n)) + O(m)*O(log(n)) = O(mlog(n))
+
+    Se il grafo è denso conviene la versione n²
+
+  # Fredman-Tarjan: heap di Fibonacci, aggiornamento O*(1) => O(m + nlog(n))
+
+  # Bellman-Ford: utilizza una coda normale. Meno efficiente, funziona anche con archi negativi
+    Inizializzazione O(n)
+    Estrazione: dequeue O(1) * O(n^2)
+    Inserimento + Aggiornamento: enqueue O(1) * O(n*m), se si trova un percorso alternativo minore il nodo
+          viene inserito nuovamente in coda
+
+    @ Passata- definizione ricorsiva:
+      * per k = 0, la zero-esima passata consiste nell'estrazione del nodo s dalla coda S
+      * per k>0, la k-esima passata consiste nell'estrazione di tutti i nodi presenti in S al termine
+                 della passata k-1
+    @ Correttezza:
+      Al termine della passata k, i vettori T e d descrivono i cammini minimi di lunghezza al più k.
+      k=0) Tutti i cammini di lunghezza 0 [da s a s]
+      k-1 => k) Al termine della passata k-1 ho trovato tutti i cammini minimi di lunghezza al più k-1
+               Estraendo i nodi della passata k, tutti i cammini che avevo trovato possono essere incrementati
+               al più di 1...
+      Al termine della passata n-1 descrivono i cammini minimi.
+    @ Complessità
+      O(n) + O(1) * O(n) + O(1) * O(n*m) [ ogni nodo può essere inserito ed estratto al più n volte]
+
+   # CAMMINI MINIMI SU DAG: sono sempre ben definiti anche con pesi negativi, in quanto non esistono
+      cicli negativi. è possibile "rilassare" gli archi in ordine topologico, una volta sola. Non
+      essendoci cicli non c'è modo di tornare su un nodo già visitato. Basato su una coda.
+      @ COMPLESSITÀ O(n+m)
+  # GRAFI NON PESATI: BFS O(n+m)
+
+
+### CAMMINI MINIMI SORGENTE MULTIPLA
+  # PESI POSITIVI - applicazione ripetuta di Dijkstra O(n*mlog(m)), O(n³)
+  # FLOYD-WARSHALL - basato su programmazione dinamica
+      @ Cammino k-vincolato: sia k un valore in {0,...,n}. Diciamo che un cammino è un cammino
+        minimo k-vincolato fra x e y se esso ha il costo minimo fra tutti i cammini fra x e y che non
+        passano per i nodi k+1...n [x e y esclusi] [assumiamo che i nodi abbiano un ordinamento]
+
+        Un cammino minimo 0-vincolato è un arco tra x e y, un cammino n vincolato è il cammino minimo
+        tra x e y
+      @ Distanza k-vincolata:
+          Denotiamo dk[x][y] il costo totale del cammino k-vincolato
+
+          dk[x][y] = {w(pk(x,y)) se esiste pk(x,y)
+                      +∞ altrimenti}
+          dk[x][y] = {
+                      w(x,y) se k=0
+                      min(d_k-1[x][y], d_k-1[x][k] + d_k-1[k][y]) se k>0
+          }
+        Oltre a definire la matrice d, calcoliamo una matrice T dei padri dove T[x][y] rappresenta
+        il predecessore di y nel cammino minimo
+
+        Algoritmo:
+        * trasformo il grafo in una matrice di adiacenza
+        * per ogni k
+            per ogni nodo u
+              per ogni nodo v
+                se d[u][k] + d[k][v] < d[u][v]
+                  aggiorna i costi
+
+        # nota che uso una matrice bidimensionale come se fosse tridimensionale
+
+        Deriva dall'algoritmo di Warshall per la chiusura transitiva G* di un grafo G
+        in cui E* = {(u,v) | ∃ un cammino da u a v in G}
+
+        Mk[x][y] = {
+                    M[x][y]       se k=0
+                    M_k-1[x][y] ∨ M_k-1[x][k]∧M_k-1[k][y] se k>0
+        }

@@ -1,0 +1,77 @@
+### BACKTRACKING ###
+"Prova una strada, se non funziona torna indietro e provane un'altra"
+Problemi tipici:
+  * Enumerazione: elencare le soluzioni ammissibili
+    Es. permutazioni di 10 elementi
+  * Costruire almeno una soluzione per problemi particolarmente difficili
+  * Contare il numero di possibili soluzioni quando non è possibile usare una formula
+    analitica o programmazione dinamica
+  * Trovare una soluzione ammissibile/buona
+
+Schema generale:
+  * Una soluzione è data da una sequenza di scelte. Tali scelte sono prese da un insieme C di scelte
+    dipendenti dal problema.
+    A ogni passo partiamo da una soluzione parziale S[1..k], in cui ho preso k scelte
+    * se tale soluzione è ammissibile la processiamo (es stampandola) e si termina o si continua elencando
+      tutte le soluzioni
+    * altrimenti se non è completa se possibile la estendiamo con una delle possibili scelte in
+      una soluzione S[1...k+1]. Quindi cancelliamo S[k] e ripartiamo dalla soluzione S[1...k-1]
+
+Viene a crearsi un albero di decisione in cui la radice è la soluzione vuota e le foglie le soluzioni
+ammissibili. In molti casi dei rami che non portano a soluzioni ammissibili possono essere potati (pruned)
+
+Es. * elencare tutti i sottoinsiemi dell'insieme {1...n}
+    provo a prendere o non prendere l'elemento i esimo per i da 1 a n
+    Complessità O(n*2^n) [n per la stampa]
+     - soluzione iterativa utilizzando la rappresentazione binaria di i da 0
+        a 2^(n-1)
+    * Elencare i sottoinsiemi di dimensione k di {1...n}
+      Soluzione iterativa: prima di stampare verifico se l'insieme ha k elementi
+      Backtracking: si può potare! quando supero k oppure non ho abbastanza elementi residui per arrivare
+                    a k. Molto conveniente per valori di k grandi o piccoli.
+    * Elencare le permutazioni di un insieme A:
+      Provo a prendere un elemento non ancora preso, togliendolo da A. Ho trovato una permutazione quando
+      A è vuoto
+    * Problema delle n regine: posizionare n regine su una scacchiera n x n in modo che non si minaccino
+      n^n con pruning, vettore di n elementi in cui S[i] contiene la riga della regina posizionata nella
+        colonna i-esima. Controllo facile con vettore righe e diagonali occupate.
+      n! provando tutte le permutazioni di {1...n}
+      Metodi euristici es. partendo da una soluzione "buona" e si cerca di muovere la regina con
+              il più grande numero di conflitti, fino a quando non ci sono più pezzi da muovere.
+              Non garantisce la terminazione corretta ma poiché esegue in tempo lineare si può ripartire
+              da un'altra soluzione iniziale.
+    * Giro di cavallo:
+      Data una scacchiera n x n trovare un percorso di mosse valide del cavallo in cui una cella viene
+      visitata una e una sola volta.
+      A ogni passo ho 8 possibili mosse (al più). In realtà la scacchiera si riempie molto rapidamente.
+    * Sudoku - si provano tutte le possibili soluzioni
+    * Soluzione labirinti oppure generarli
+
+# BACKTRACKING ITERATIVO: INVILUPPO CONVESSO.
+
+@ Un poligono è detto CONVESSO se ogni segmento di retta che congiunge due punti del poligono sta
+  interamente nel poligono stesso, incluso il bordo.
+@ Dati n punti p1,...pn nel piano, n>=3, l'inviluppo convesso è il più piccolo poligono convesso che
+  li contiene tutti.
+* Algoritmo inefficiente O(n^3)
+  si consideri la retta che passa per una coppia di punti pi,pj che divide il piano in due semipiani.
+  Se tutti gli altri n-2 punti stanno dalla stessa parte, allora lo spigolo fa parte dell'inviluppo convesso
+  ∀ coppia di punti O(n^2) verifico per gli altri n punti O(n)
+* Algoritmo di Graham
+  1. Si prende il punto con ordinata minima. Fa parte dell'inviluppo convesso. Si ordinano i punti in base
+  all'angolo formato dalla retta passante per il punto con ordinata minima e la retta orizzontale.
+  Se ci sono punti con lo stesso angolo, considero solo quello più distante.
+  2. inserisci p1 nell'inviluppo corrente.
+     per tutti i punti da 3 a n. Siano ph, pj gli ultimi due punti inseriti nell'inviluppo.
+     Se pi e p1 stanno dalla stessa parte del piano diviso dalla retta per ph e pj, inserisco pi
+     nell'inviluppo. Altrimenti tolgo pj e ripeto il punto 2.
+     Complessità O(n*log(n)) data dall'ordinamento
+                  Ogni punto aggiunto e rimosso una volta sola. O(n)
+ * Algoritmo di Jarvis - Gift packing
+  1. Si considera il punto p0 più basso che appartiene all'inviluppo
+  2. Si seleziona il punto p_i+1 in modo che tutti gli altri punti siano a destra della retta per pi, p_i+1
+      [punto trovato in tempo O(n) confrontando gli angoli formati dalla retta tra pi,p_i+1 e quella per
+      p_i+1, px per ogni punto px]
+      [ all'inizio si considera la retta orizzontale per p0 ]
+  Complessità: per ogni lato devo trovare il minimo tra n angoli O(n). Dati h il numero di lati,
+      l'algorito è O(nh). Nel caso peggiore h=n => O(n^2)

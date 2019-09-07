@@ -1,0 +1,148 @@
+Per problemi troppo difficili bisogna rinunciare a qualcosa tra:
+* GENERALITÀ: solo per alcuni input
+* OTTIMALITÀ: soluzione "buona"
+* EFFICIENZA: algoritmi esponenziali con potatura
+* FORMALITÀ: algoritmi euristici che danno risultati sperimentalmente buoni
+
+### ALGORITMI PSEUDO-POLINOMIALI [PERDO GENERALITÀ]
+# Subset-sum: esiste un sottoinsieme di un insieme con somma esattamente k
+  -> programmazione dinamica DP[i][r] analogo allo zaino ma con capacità esatta, non massima
+    => se i=0 e r>0 false, l'oggetto i-esimo lo prendo o no
+  Complessità O(nk), ma A[i] <=k, quindi la dimensione dell'input è O(nlog(k))
+  Se k è polinomiale, allora la complessità dell'algoritmo è polinomiale O(n^(c+1))
+  Altrimenti la complessità è super-polinomiale O(n*2^n)
+
+@ Dato un problema decisionale R e una sua istanza I:
+  * la dimensione d di I è la lunghezza della stringa che codifica I
+  * il valore # è il più grande numero intero che appare in I
+
+@ Sia R_p il problema R ristretto a quei dati d'ingresso per i quali # è
+  limitato superiormente da p(d) con p funzione polinomiale in d
+  R è FORTEMENTE ℕℙ-COMPLETO se R_p è ℕℙ-COMPLETO.
+  Altrimenti si dice DEBOLMENTE ℕℙ-COMPLETO
+  Es. CLIQUE
+    k <=n, => # = max{n,m,k} = max{n,m}
+    d = O(n+m+log#) = O(n+m)
+    => # = O(n+m), quindi il problema ristretto è uguale al problema originale
+    => fortemente ℕℙ-completo
+  Es. SUBSET-SUM
+    Se k O O(n^k), allora # = max{n,k,a1,...,an} = O(n^k)
+    => la soluzione basata su DP ha complessità O(n^(k+1)) => debolmente ℕℙ-completo
+
+@ Un algoritmo che rislve un certo problema R, per qualsiasi dato I di ingresso,
+  in tempo p(#,d) con p funzione polinomiale in # e d, ha complessità PSEUDO-POLINOMIALE
+
+# PARTITION - partizione in due sottoinsiemi di somma uguale
+  posso ridurlo a subset-sum, so la somma da raggiungere k
+  => debolmente ℕℙ-completo
+# 3-PARTITION - partizionare in sottoinsiemi di 3 elementi
+  È fortemente ℕℙ-completo
+
+### ALGORITMO DI APPROSSIMAZIONE [PERDO OTTIMALITÀ]
+
+@ Dato un problema di ottimizzazione con funzione di costo non negativa c, un algoritmo
+  si dice di α(n)-approssimazione se fornisce una soluzione ammissibile x il cui costo c(x)
+  non si discosta dal costo c(x*) della soluzione ottima x* per più di un fattore α(n), per
+  qualunque input di dimensione n.
+  c(x*) <= c(x) <= α(n)c(*)       α(n) > 1 MINIMIZZAZIONE
+  α(n)c(*) <= c(x) <= c(*)        α(n) < 1 MASSIMIZZAZIONE
+
+  α(n) può essere una costante, valida per tutti gli n.
+
+* BIN-PACKING: Dato un insieme A={a1,...,an} di interi positivi ( i volumi degli oggetti ),
+  e un intero k (la capacità di una scatola), trovare una partizione di {1,...,n} nel minimo numero
+  di sottoinsiemi disgiunti tali che la somma di ogni sottoinsieme sia <= k
+  - Algoritmo FIRST-FIT
+    Supponiamo che il numero N di scatole utilizzate sia > 1
+    Il numero minimo di scatole è limitato da
+      N* >= (∑ai)/k
+    Non possono esserci due scatole riempite meno di metà
+      N < (∑ai)/(k/2)
+    => N* <= N <= α(n)N*  α(n) <= 2
+  - FIRST-FIT DECREASING considerando gli oggetti in ordine decrescente si ottiene una approssimazione
+    migliore
+
+  * COMMESSO VIAGGIATORE TSP - minimizzando la distanza (somma dei pesi degli archi) percorsa.
+      vale CIRCUITO HAMILTIONIANO <= TSP [pesi unitari]
+      # Δ-TSP [CON DISUGUAGLIANZE TRIANGOLARI]: dij <= dik + dkj per ogni i,j,k tra 1 e n
+          dimostriamo che il problema Δ-TSP resta ℕℙ-completo dimostrando HAMILTON <= Δ-TSP
+            Sia G=(V,E) un grafo non orientato
+            Definiamo un insieme di distanze a partire da G
+            dij = {
+                   1 se (i,j) ∈ E
+                   2 altrimenti
+                  }
+            Il grafo G ha un circuito hamiltoniano se e solo se è possibile trovare un percorso da
+            commesso viaggiatore lungo n.
+            Valgono le disuguaglianze triangolari dij <= 2 <= dik + dkj
+
+
+      @ LOWER BUOND PER Δ-TSP
+        * considerato un circuito hamiltoniano e cancellato un arco si ottiene un albero di copertura
+        * # TEOREMA qualunque circuito hamiltoniano ha costo c(π) superiore al costo di un mst
+            DIM: supponiamo che c(π) <= mst. Allora togliendo un arco otterrei un mst di peso inferiore
+        * Si individua un mst e se ne percorrono gli archi due volte, visitando ogni città almeno una
+          volta con una distanza complessiva 2*mst [non è un circuito hamiltoniano]
+        * Si evita di passare per città già visitate. Per la disuguaglianza triangolare, il costo c(π)
+          è sicuramente <= 2*mst
+        * Quindi c(π) <= 2 * mst < 2 * c(π*) => α(n) < 2, dove c(π*) è il costo del circuito hamiltoniano
+          ottimo
+      @ COMPLESSITÀ: O(n²log(n)):
+        O(n²log(n)) per Kruskal, O(n) per la visita in profondità del MST raddoppiato con 2n archi
+
+  # Teorema: non esiste alcun algoritmo di approssimazione assoluta per il TSP tale che c(x) <= s*c(x*)
+             con s >= 2.
+    Dimostrazione:
+      Supponiamo che esista. Si consideri HAMILTON <= TSP
+      Sia dato un grafo G e sia [dij] una matrice delle distanze tale che
+        [dij] = {
+            1 se [i,j] ∈ E
+            sn altrimenti
+        }
+      Se G ha un circuito hamiltoniano, allora c(x*) = n, quindi A fornisce in tempo polinomiale una
+      soluzione x tale che c(x) <= sc(x*) = sn
+      Se G non ha un circuito Hamiltoniano, allora c(x*) > sn, quindi A fornisce in tempo polinomiale una
+      soluzione x tale che c(x) >= c(x*) > sn
+      Quindi A risolve HAMILTON in tempo polinomiale, impossibile
+
+
+### ALGORITMI BRANCH & BOUND [PERDO EFFICIENZA]
+  Variante del backtracking per problemi di ottimizzazione, assumendo che ogni scelta non faccia
+  diminuire il costo della soluzione parziale costruita.
+  Definiamo un upper-bound [minCost della miglior soluzione ottenuta finora]
+  e un lower-bound [ tutte le soluzioni ammissibili generabili facendo nuove scelte hanno costo
+  >= lb(S,i) dove S è la sequenza di scelte fatte finora e i il numero di scelte fatte].
+  Se lb >= minCost allora posso potare il sottoalbero.
+
+  Non migliora la complessità superpolinomiale ma ne abbassa drasticamente il tempo. Dipende molto
+  da quanto lb è stretto
+
+  # ESEMPIO - TSP
+    Al passo i-esimo sono state fatte le scelte S[1...i] prese dall'insieme {1...n}
+    * Un percorso ammissibile che espande quello trovato passa da i a una delle n-i rimanenti città
+    * attraversa le rimanenti in un ordine qualsiasi, quindi torna a S[1]
+
+    * Data C[i] la distanza percorsa finora
+    * Lower bound A per tornare a S[1] = min {d[h][1]} dove h non appartiene a S - O(n)
+    * Lower bound B per andarsene da S[i] = min {d[S[i]]]h]}, h non appartiene a S - O(n)
+    * Lower bound per attraversare una qualsiasi delle ultime n-i città provenendo da un'altra delle n-i
+                D[h] = min della somma tra  archi entranti e uscenti da h per ogni h non in S - O(n³)
+    * lb(S,i) = {
+        C[i] + d[S[i],S[1]] se    i=n
+        C[i] + A + B + ⌈∑D[h]/2⌉  i<n
+      }
+    * minCost la inizializzo con il valore di una soluzione qualunque
+
+### ALGORITMI EURISTICI [PERDO FORMALITÀ]
+  Forniscono una soluzione non necessariamente ottima, non necessariamente approssimata. Si utilizzano
+  tecniche greedy e ricerca locale
+
+  * TSP - GREEDY
+    Ordino archi per perso crescente, ne aggiungo n-1 alla soluzione in ordine in modo che rispettino le
+    caratteristiche di un circuito (no cicli[MFSET], catena). Quindi si chiude il circuito.
+    Costo O(n^2log(n)) per l'ordinamento. Si può ottenere come partenza per branch&bound o ricerca locale
+  * TSP - GREEDY - NEAREST NEIGHBOR
+    Si sceglie la città più vicina non ancora visitata. O(n²)
+  * TSP - RICERCA LOCALE
+    Partendo da una soluzione valida, cerco di migliorarla eliminando i due archi non consecutivi e li
+    sostituisco con altri due, se miglioro. Ogni volta esamino tutte le coppie di archi che sono O(n²)

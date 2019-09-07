@@ -1,0 +1,276 @@
+### GREEDY
+Algoritmi che fanno la scelta ingorda, ossia la soluzione localmente ottima che
+porta a una soluzione globale ottima [oppure a una soluzione buona se cerco di approssimare
+il risultato].
+
+* Problema: INSIEME INDIPENDENTE DI INTERVALLI
+  Dati n intervalli della retta reale distinti, chiusi a sinistra e aperti e a destra, trovare un insieme
+  indipendente massimale [di massima cardinalità] formato da intervalli disgiunti.
+
+  - può essere risolto con programmazione dinamica
+    + assumiamo gli intervalli ordinati per tempo di fine
+    + definiamo S[i,j] l'insieme degli intervalli che iniziano dopo la fine di i e finsicono
+      prima dell'inizio di j
+      S[i,j] = {k | bi <= ak < bk <= aj}
+      Aggiungiamo gli intervalli 0 (b0 = -∞) e n+1 (an+1 +∞)
+      Il problema corrisponde al problema S[0, n+1]
+
+    # Teorema: Supponiamo A[i, j] una soluzione ottimale di S[i, j] e sia k un intervallo che appartiene
+               a A[i,j]. Allora:
+               * Il problema S[i,j] viene suddiviso in due sottoproblemi:
+                 S[i,k] e S[k,j]
+               * A[i,j] contiene le soluzioni ottimali di S[i,k] e S[k,j]:
+                  A[i,j] ∩ S[i,k] è la soluzione ottimale di S[i,k]
+                  A[i,j] ∩ S[k,j] è la soluzione ottimale di S[k,j]
+      Dimostrazione per assurdo...
+
+      Possiamo dare una definizione ricorsiva della soluzione
+      A[i,j] = A[i,k] ∪ {k} ∪ A[k,i]
+      Sia DP[i,j] la dimensione del più grande sottoinsieme di intervalli indipendenti di S[i,j]
+
+      DP[i,j] = {
+          0 se S[i,j] == ∅
+          max_k∈S[i,..j] {DP[i,k] + DP[k,j] +1} altrimenti
+      }
+      Complessità O(n³)
+      # Nota: avevamo un algoritmo per intervalli pesato in O(nlogn)
+      # Siamo sicuri che serva analizzare tutti i valori possibili di k?
+      # Teorema: sia S[i,j] un sottoproblema non vuoto e m l'intervallo di S[i,j] con
+                minor tempo di fine. Allora:
+                1. Il sottoproblema S[i,m] è vuoto
+                2. m è compreso in qualche soluzione ottima di S[i,j]
+      Dimostrazione:
+        1. Sappiamo che am < bm, ∀k ∈ S[i,j], bk >= bm
+            => ∀ k: am < bk, ossia nessun intervallo termina prima di am, allora S[i,m] è vuoto
+
+        2. Sia A'[i,j] una soluzione ottima di S[i,j] e sia m' l'intervallo con minor tempo di fine
+            di A'[i,j].
+          Sia A[i,j] = A'[i,j]-{m'} ∪ {m} una nuova soluzione di S[i,j]
+          A[i,j] è una soluzione ottima che contiene m, in quanto ha la stessa dimensione di A' e gli
+          intervalli sono indipendenti.
+      => l'algoritmo consiste nel prendere sempre l'intervallo compatibile con l'ultimo preso con minor
+         tempo di fine, ed ha complessità O(n) se si esclude l'ordinamento iniziale degli intervalli
+
+* Problema: RESTO
+  Dato un insieme di n tagli di monete e un intero R, trovare il più piccolo numero intero di pezzi
+  necessari per dare un resto di R centesimi utilizzando i tagli di cui sopra, assumendo di avere un
+  numero illimitato di monete per ogni taglio, cioè trovare un vettore x di interi tale che
+  m = ∑x[i] è minimo e ∑t[i]*x[i] = R
+
+  # Teorema: Sottostruttura ottima
+    Sia S(i) il problema di dare un resto pari ad i
+    A(i) una soluzione  ottima di S(i) [multi-insieme], sia j ∈ A(i)
+    Allora S(i-t[j]) è un sottoproblema di S(i), la cui soluzione ottima è data da A(i) - {j}
+
+  Sia DP[i] il numero minimo di monete per risolvere S(i)
+
+  DP[i] = {
+    0                                    i=0
+    min1<=i<=n{DP[i-t[j]] | t[j]<=i} + 1 i>0
+  }
+  Complessità O(nR)
+
+  # Se i tagli sono uno almeno il doppio dell'altro esiste una soluzione greedy
+    che consiste nel selezionare la più grande moneta j tale che t[j] <= R
+    Complessità O(nlogn) se devo ordinare, O(n) altrimenti
+
+    Devo dimostare che data una soluzione ottima,
+                  n
+    t[k] > mk =   ∑ x[i] * t[i] per ogni k
+                i=k+1
+
+    Es. con t = {50, 10, 5, 1}
+
+* Problema: scheduling
+   Dati un processore e n job da eseguire ognuno con un tempo di esecuzione t[i],
+   trovare una sequenza di esecuzione che minimizzi il tempo medio di completamento
+
+   @ Dato un vettore A[1..n] contenente una permutazione di {1,...,n}, il tempo di
+   completamento dell'h-esimo job nella permutazione è:
+    Ta(h) =   ∑    t[A[i]]
+            1<=i<=h
+
+   => Soluzione: Shortest job first
+   # Teorema: Scelta greedy. Esiste una soluzione ottima A in cui il job con minor tempo di fine m si trova
+              in prima posizione
+    Dimostrazione:
+      Si consideri una permutazione ottima B = [B[1],..., B[m-1],B[m],B[m+1],...,B[n]]
+      Sia m la posizione di B i cui si trova il job con minor tempo di fine.
+      Si consideri una permutazione in cui i job in posizione 1 e m vengono scambiati
+      A=[B[m],...,B[m-1],B[1],B[m+1],...,B[n]]
+      Il tempo di completamento medio di A è minore o uguale a quello di B. Infatti i job in
+      posizione 1,...,m-1 hanno tempo di completamento minore in A rispetto a B. Quelli da m
+      in poi hanno tempo di completamento uguale.
+      B ottima => TB<=TA, TA<=TB => TA = TB
+   # Teorema: sottostruttura ottima. Sia A una soluzione di un problema con n job, il cui job con minor
+              tempo di fine m si trova in prima posizione. La permutazione dei seguenti n-1 job in A
+              è una soluzione ottima al problema in cui m non viene considerato
+* Problema: Zaino frazionario (o reale).
+    Soluzione: ordino gli elementi per profitto specifico pi/wi crescente e li prendo in ordine
+    fino a raggiungere la capacità, prendendoli interi finché posso, mentre l'ultimo potrà essere preso
+    solo in parte
+
+    Dimostrazione informale: Sia x una soluzione ottima, supponiamo x[1] < min(C/w[i],1) < 1
+    Allora possiamo costruire una nuova soluzione in cui x'[1] = min(C/w[i],1) e la proporzione di
+    uno o più oggetti è ridotta di conseguenza. x' è una soluzione di profitto uguale o superiore,
+    visto che il profitto specifico dell'oggetto 1 è massimo
+
+* Problema: Compressione di Huffman
+    Rappresentare i dati in maniera efficiente, impiegando il numero minore di bit per la rappresentazione
+    per risparmiare spazio su disco e tempo di trasferimento.
+    - Possibile tecnica di compressione: funzione di codifica di caratteri.
+      Dato un carattere c, f(c) = x dove x + una rappresentazione binaria di c
+      es. ASCII 8 bit per carattere -> n caratteri = 8n bit
+
+      Se conosciamo la frequenza di ciascun carattere possiamo sfruttare questo fatto per usare meno
+      bit per rappresentare i caratteri più frequenti
+
+      @ Codice a prefisso: codifica dove nessun codice è prefisso di un altro codice [necessario
+        per la decodifica ]
+      Codifica di Huffman utilizzata come metodo di compressione testi da programmi come pkzip.
+      Utilizza una rappresentazione ad albero, dove il figlio sinistro rappresenta uno 0 e quello
+      destro un 1. Leggendo il testo codificato visito l'albero, finché arrivo ad una foglia che significa
+      che ho finto di leggere un carattere [ i caratteri sono solo nelle foglie, tutti i nodi interni devono
+      avere 2 figli ], quindi torno alla radice.
+
+      Quanti bit sono necessari per codificare un file? Sia T un albero che rappresenta la codifica,
+      per ogni carattere c, sia dT(c) la profondità della foglia che rappresenta c.
+      Il codice per c richiederà dT(c) bit.
+      Sia f[c] il numero di occorrenze di c nel file, la dimensione della codifica è
+      ∑ f[c]*dT(c)
+
+      Principio del codice di Huffman è quello di minimizzare la lunghezza dei caratteri più frequenti,
+      assegnando di conseguenza ai caratteri con frequenza minore i codici corrispondenti ai percorsi
+      più lunghi all'interno dell'albero.
+      Al file codificato è associato l'albero di codifica
+
+      Algoritmo:
+      Creare una lista ordinata di nodi foglia, ognuno contenente un carattere e la relativa frequenza
+      per frequenza crescente.
+      Selezionare i due nodi meno frequenti e creare un nuovo nodo con figli i due nodi selezionati e
+      frequenza la somma delle frequenze, reinserendolo nella lista ordinata.
+      Ripetere finché nella lista non rimane un solo nodo
+     -> per mantenere ordinata la lista si utilizza una MinPriorityQueue
+     Complessità O(nlog(n)): n inserimenti con costo log(n)
+                            2n-2 delete con costo log(n)
+                            n-1 inserimenti con costo log(n)
+
+      # Teorema: L'output dell'algoritmo di Huffman per un dato file è un codice a prefisso ottimo
+
+        Scelta greedy: Scegliere i due caratteri con frequenza più bassa conduce sempre a una soluzione
+        ottima. In particolare dati i due caratteri x,y con frequenza più bassa, esiste un codice a prefisso
+        ottimo per l'alfabeto Σ in cui x,y hanno la stessa profondità massima e i loro codici differiscono
+        solo per l'ultimo bit (foglie sorelle)
+
+        Dimostrazione: Supponiamo che esista un codice ottimo in cui le foglie sorelle di
+        di profindità massima siano due caratteri a,b.
+        Assumiamo senza perdita di generalità che f[x] <= f[y], f[a] <= f[b].
+        Poichè le frequenze di x e y sono minime, f[x] <= f[y] <= f[a] <= f[b]
+        Scambiamo x con a ottenendo T', y con b ottenendo T''. Dimostriamo che C(T)-C(T')>=0
+        ∑f[c]dT(c) - ∑f[c]dT'(c) = f[a]dT(a) + f[x]dT[x] - f[a]dT(x) - f[x]dT(a) =
+                                 = (f[a]-f[x])(dT(a)-dT(x)) >= 0
+        Analogamente si dimostra C(T')-C(T'')>=0
+        => C(T) >= C(T'') ∧ C(T'') >= C(T) => C(T) = C(T'') => T'' è ottimo
+
+        Sottostruttura ottima: dato un problema sull'alfabeto Σ, è possibile costruire un sottoproblema
+        con un alfabeto più piccolo [con un carattere che sostituisce i due con frequenza più bassa]
+
+* Problema: Alberi di copertura di Peso Minimo
+        Dato un grafo pesato, determinare come interconnettere tutti i suoi nodi minimizzando il costo
+        del peso associato ai suoi archi.
+
+        Input: Un grafo G=(V,E) non orientato e connesso [ altrimenti posso trovare foresta d copertura]
+               una funzione di costo w:VxV->R tale che:
+               * se [u,v] ∈ E, w(u,v) è il peso dell'arco,
+               * se [u,v] ∉ E, w(u,v) = +∞
+               Poiché G non è orientato, w(u,v) = w(v,u)
+        @ Albero di Copertura: sottografo T=(V, ET) tale che:
+              * T è un albero
+              * ET ⊂ E
+              * T contiene tutti i vertici di G
+        Output: Minimum Spanning Tree
+              Albero di copertura il cui peso totale è minimo tra tutti gli alberi di copertura.
+              w(T) =    ∑        w(u,v)
+                    [u,v] ∈ ET
+
+        L'idea è di accrescere un sottoinsieme A di archi in modo che venga sempre rispettata la seguente
+        invariante: A è un sottoinsieme di qualche albero di connessione minimo. Per aggiungere questi
+        archi seguiremo un approccio greedy.
+
+        @ Arco sicuro: un arco (u,v) è detto sicuro per A se A ∪ {(u,v)} è ancora un sottoinsieme di qualche
+        albero di copertura minimo.
+
+        @ Taglio: (S, V-S) di G è una partizione di V in due sottoinsiemi disgiunti
+        @ Un arco (u,v) attraversa il taglio se u∈S e v∈(V-S)
+        @ Un taglio rispetta un insieme di archi A se nessun arco di A attraversa il taglio.
+        @ Un arco che attraversa il taglio è LEGGERO nel taglio se il suo peso è minimo fra tutti gli archi
+          che attraversano il taglio.
+
+        # Teorema: Siano G, w... Sia A ⊆ E un sottoinsieme contenuto in qualche mst di G.
+                  Sia (S, V-S) un qualunque taglio che rispetta A e sia (u,v) un arco leggero che
+                  attraversa il taglio.
+                  Allora (u,v) è sicuro per A
+
+        Dimostrazione:
+          Sia T un mst che contiene A. Due casi:
+          * (u,v) ∈ T allora (u,v) è sicuro per A
+          * (u,v) ∉ T allora trasformiamo T in T' contenente (u,v) e dimostriamo che T' è un mst.
+            u,v sono connessi da una cammino C in T [per definizione di albero]
+            u,v stanno in lati opposti del taglio ((u,v) attraversa il taglio per ipotesi)
+            => in T esiste un arco (x,y) ∈ C che attraversa il taglio poiché u e v non sono
+            collegati da  (u,v)
+            T' = T - (x,y) ∪ (u,v) è ancora un albero di copertura [ togliendo un arco ottengo
+            due foreste, aggiungendone uno che connette le due foreste ottengo di nuovo un albero,
+            che connette tutti i nodi]
+            w(T') <= w(T) perché (u,v) è leggero
+            ma w(T') >= w(T) perché T è minimo >= w(T') = w(T)
+        # Corollario: dati G, w, A.
+          Sia C una componente connessa (un albero) nella foresta GA=(V,A)
+          Sia (u,v) un arco leggero che connette C a qualche altra componente in GA, allora (u,v) è
+          sicuro per A.
+
+        § ALGORITMO DI KRUSKAL
+          Idea: ingrandire sottoinsiemi disgiunti di un mst connettendoli tra loro fino a ottenere
+          l'albero complessivo. Si individua un arco sicuro tra tutti gli archi che connettono due
+          componenti connesse [scelta greedy]. Come struttura dati si utilizza un MFS
+          Input: Vettore di archi
+          * Ordino gli archi per perso crescente
+          * Finchè ho ancora archi da visitare e ancora archi da aggiungere
+              Se gli estremi dell'arco da aggiungere non appartengono allo stesso set,
+                  [atrimenti formerei un ciclo]
+                  li metto nello stesso set e aggiungo l'arco al mst.
+          Output: set di archi
+          Complessità: Ordinamento O(mlog(m)) = O(mlog(n²)) = O(mlog(n))
+                       Utilizzando MFS con euristiche find e merge hanno costo ammortizzato O(1),
+                          inizializzazione O(n)
+                        O(m) operazioni su MFS (2 find e 1 merge)
+                      => Costo O(m+n+mlog(n)) = O(mlog(n))
+
+        § ALGORITMO DI PRIM
+          Procede mantenendo A in un singolo albero. Parte da un vertice arbitrario e cresce fino a
+          quando non copre tutti i vertici. A ogni passo viene aggiunto un arco leggero del taglio
+          (VA, V-VA).
+          Correttezza: (VA, V-VA) è un taglio che rispetta A. Per il corollario, gli archi leggeri che
+          rispettano il taglio sono sicuri.
+
+          Utilizza una MinPriorityQueue in cui sono presenti i vertici non ancora aggiunti. La priorità
+          di v è data dal peso minimo di un arco che collega v a un vertice dell'albero, +∞ se non esiste.
+          Output: albero come vettore dei padri. A è mantenuto implicitamente come insieme di archi (u,v)
+          per cui u,v non sono in coda
+          Inserisco tutti i nodi con priorità ∞, r con priorità 0.
+          Finchè la coda non è vuota
+            Estraggo il nodo con priorità minore
+            Per ogni nodo adiacente
+              Se è ancora in coda e posso raggiungerlo dal nodo estratto con peso minore:
+                Aggiorno la sua priorità
+          Complessità [utilizzando heap binario]:
+            O(n) inserimenti con costo log(n)
+            O(n) nodi estratti O(1)
+            O(m) aggiornamenti priorità log(n)
+            => O(mlog(n))
+          Se utilizzo un vettore non ordinato:
+            inizializzazione O(n), O(n) nodi estratti in O(n), O(m) aggiornamenti in O(1)
+            => O(n^2)
+          Quale scegliere? Dipende dal numero di archi, per grafi densi conviene vettore non ordinato
+
+          # Nota gli archi con i due pesi minimi sono sempre sicuri

@@ -1,0 +1,252 @@
+### PROGRAMMAZIONE DINAMICA
+Basato su divide et impera, utilizzato quando lo stesso sottoproblema deve essere risolto molte volte.
+In questo caso la soluzione viene memorizzata in una tabella indicizzabile in O(1) in modo da
+risolvere ogni sotto-problema una volta sola.
+
+*Problema: DOMINO
+  Tessere grandi 2x1. Dato un intero n, restituire il numero di disposizioni di n tessere in un rettangolo
+  2xn.
+  Se non ho tessere -> 1
+  Se ho 1 tessera -> 1
+  Altrimenti, posso mettere l'n-esima tessera in verticale, dovendo disporre le n-1 precedenti,
+  oppure in orizzontale, dovendo mettere la n-1-esima in orizzontale e quindi dovendo disporre le
+  n-2 precedenti => DP[n] = DP[n-1] + DP[n-1] se n > 1
+                            1 altrimenti
+  => Fibonacci!
+  * Scritto così ha complessità esponenziale [ Teorema delle ricorrenze lineari di ordine costante,
+    a = 2 => Θ(2^n)] perchè molti sotto-problemi sono ripetuti!
+  * Soluzione: Memorizziamo ogni risultato calcolato in una tabella DP che contiene un elemento per
+               ogni sottoproblema.
+               L'iterazione può essere top-down(Memoization) o bottom-up.
+               Complessità Θ(n) sia in tempo che in spazio
+  * Osservo che utilizzo sempre solo gli ultimi 2 risultati calcolati => posso salvare solo quelli
+    utilizzando ϴ(1) spazio.
+  # Nota che la serie cresce molto rapidamente (esponenzialmente) => sono richiesti ϴ(n) bit per
+    memorizzare l'n-esimo numero di fibonacci => tutte le Complessità devono essere moltiplicate per
+    un fattore n. ϴ(n²) tempo, Θ(n) spazio
+
+* Problema: HATEVILLE
+  Villaggio composto da n case, numerate da 1 a n lungo una singola strada. Ognuno odia i propri vicini
+  da entrambi i lati (i-1, i+1). Hateville vuole organizzare una sagra e abbiamo il compito di raccogliere
+  i fondi massimizzandone il valore, sapendo che i è disposto a donare D[i] ma se e solo se entrambi i
+  propri vicini non donano.
+  Definiamo HV(i) uno dei possibili insiemi di indici da selezionare per ottenere una donazione ottimale
+  dalle prime i case. HV(n) è la soluz. al problema originale.
+  HV(i) = highest(i ⊕ HV(i-2), HV(i-1)) (prendo l'i-esimo elemento oppure no)
+
+  Dimostrazione correttezza- sottostruttura ottima
+  Sia HV_p(i) il problema dato alle prime i case,
+      HV_s(i) una soluzione ottimale per HV_p(i).
+  Segue che:
+    1. se i ∉ HV_s(i), allora HV_s(i) = HV_s(i-1)
+    2. se i ∈ HV_s(i), allora HV_s(i) = HV_s(i-2) ∪ {i}
+  DIMOSTRAZIONE:
+    1. Supp che HV_s(i) non sia una soluzione ottima per HV_p(i-1), allora esisterebbe una
+       soluzione migliore per i-1, ma che sarebbe a sua volta soluzione del problema i, migliore
+       di quella ottima, ma ciò è assurdo.
+    2. Sappiamo che i-1 ∉ HV_s(i), quindi togliendo i otteniamo una soluzione ottima per i-2.
+        Se così non fosse, esisterebbe una soluzione migliore per i-2, che concatenata ad i
+        produrrebbe una soluzione migliore di quella ottima per il problema i, assurdo.
+
+        Nella tabella, memorizzare gli insiemi sarebbe costoso, per questo si memorizza solo la somma
+        da cui sarà infine possibile risalire all'insieme di indici ottimo
+  DP[i] = {
+      max(D[i] + DP[i-2], DP[i-1]) se i>=2 # scelgo se prendere l'i-esimo oppure no
+      D[i] se                      se i==1
+      0                            se i==0
+  }
+
+  Data la tabella, possiamo risalire alla soluzione ottima partendo da DP[n] vedendo se è uguale a
+  DP[n-1] (non ho preso n, vado a n-1) oppure no (ho preso n, vado a n-2). Se non voglio risalire alla
+  soluzione, posso memorizzare solo gli ultimi 2 risultati calcolati riducendo la complessità spaziale.
+
+* Problema: Zaino
+  Dato un insieme di oggetti, ognuno caratterizzato da un peso w e da un profitto p, e uno zaino con un
+  limite di capacità C, individuare un sottoinsieme di oggetti il cui peso sia inferiore alla capacità
+  dello zaino e il cui valore sia massimale (il più alto tra tutti gli altri sottoinsiemi validi di
+  oggetti).
+
+  Definiamo DP[i][c] come il massimo profitto ottenibile dai primi i<=n oggetti con uno zaino di
+  capacità c. Il problema originale è rappresentato da DP[n][C]
+
+  DP[i][c] = max(DP[i-1][c], p[i] + DP[i-1][c-w[i]]) se i >= 1 ∧ c > 0 # non lo prendo vs lo prendo
+             0                                       se i == 0 ∨ c == 0
+             -∞                                      se c < 0
+  Posso ricostruire la soluzione partendo da DP[n][C] e verificando da dove provengo
+
+  # ATTENZIONE: T(n) = O (n*C) dove C è rappresentato con k bit (k = logC) => l'algoritmo è
+    pseudo polinomiale T(n) = O(n*2^k)
+
+  * Soluzione con memoization.
+    Visto che la complessità è pseudo-polinomiale, conviene usare la versione ricorsiva? No perchè
+    T(n) = 2T(n-1) +1 = O(2^n) [ conviene se 2^n << n*C ]
+    Osserviamo però che non tutti gli elementi della matrice sono utili, la maggior parte vengono
+    calcolati inutilmente => posso utilizzare la versione ricorsiva evitando di ricalcolare i sottoproblemi
+    già risolti (MEMOIZATION). In realtà non ho un vantaggio perchè la tabella deve essere comunque
+    inizializzata. Posso invece utilizzare una hash table ottenendo un costo pari a O(min(2^n, n*C))
+
+* Problema: Zaino senza limiti di scelta: un oggetto può essere preso più volte rispettando i vincoli
+            sulla capacità, massimizzando il profitto
+
+            DP[i][c] = { max(DP[i-1][c], p[i] + DP[i][c-w[i]]) se i >= 1 e c > 0
+                          0   se c == 0 or i == 0
+                          - ∞ se c < 0
+                        }
+            L'algoritmo converge comunque perché o l'indice o la capacità diminuiscono sempre
+            # Si può tuttavia semplificare la formula riducendo lo spazio occupato ϴ(C), Complessità
+              sempre O(nC)[non è detto che le debba riempire tutte] perchè per ogni casella devo
+              scorrere tutti gli n oggetti.
+            DP[c] = {
+                0 se c==0
+                max_w[i]<=c {DP[c-w[i] + p[i]]}
+            }
+
+            # Questo approccio rende più difficile ricostruire la soluzione, conviene memorizzare l'indice
+            # da cui deriva il massimo
+
+* Problema: LCS
+    Date due stringhe, trovare la più lunga sottosequenza comune.
+    Applicazioni: Bioinformatica, confronto tra sequenze di DNA
+                  diff per verificare le modifiche fatte a un file ( a livello di riga)
+
+    @ Una sequenza P è una SOTTOSEQUENZA di T se P è ottenuto da T rimuovendo uno o più dei suoi elementi.
+      I rimanenti elementi sono elencati nello stesso ordine , senza essere necessariamente contigui.
+    @ Una sequenza X è una SOTTOSEQUENZA COMUNE di due sequenze T, U se è sottosequenza sia di T che di U
+      X ∈ CS(T, U)
+    @ Una sequenza X ∈ CS(T, U) è una SOTTOSEQUENZA COMUNE MASSIMALE di T e U se non esiste Y ∈ CS(T, U)
+      tale che |Y| > |X|
+      X ∈ LCS(T,U)
+    -> Trovare una LCS tra T e U
+    * Brute force -> per ogni sottosequenza di T controllo se è anche di U ->nr. di sottoseq è 2^n
+      => Complessità 𝛉(2^n(n+m)) [verficare se è sottoseq. di U]
+
+    @ Data una seqquenza T, il prefisso T(i) è una sequenza data dai primi i caratteri di T
+
+    Possiamo scrivere la soluzione in maniera ricorsiva
+    # se gli ultimi caratteri sono uguali, li considero e riduco il problema ai caratteri precedenti
+    # se gli ultimi caratteri sono differenti, scelgo la LCS massima tra più le due soluzioni togliendo
+      l'ultimo carattere di T oppure l'ultimo di U
+    LCS(T(i), U(j)) = {
+        LCS(T(i-1), U(j-1)) ⊕ t_i se  i>=1, j>=1, t_i == u_j
+        longest(LCS(T(i-1), U(j)), LCS(T(i), U(j-1))) se i>=1, j>=1, t_i != u_j
+        ∅ se i==0 or j == 0
+    }
+    Dimostrazione correttezza per assurdo
+    Teorema sottostruttura ottima:
+    Date due sequenze T=(t1,..., tn), U=(u1,...um), sia X = (x1,..., xk) una LCS di T e U. Allora:
+    1. se tn == um => xk = tn = um e X(k-1) ∈ LCS(T(n-1), U(m-1))
+    2. se tn != um  xk != tk => X ∈ LCS(T(n-1), U)
+    3. se tn != um  xk != uk => X ∈ LCS(T, U(m-1))
+
+    Dimostrazione:
+    1. supponiamo xk != tn = um. Allora (X ⊕ xk) ∈ CS(T, U) e |Y| > |X|, assurdo
+       supponiamo che X(k-1) ∉ LCS(T(n-1), U(m-1)) >= ∃ Y ∈ LCS(T(n-1), U(m-1)) tale che
+                  |Y| > |X| ma allora Y ⊕ tn ∈ CS(T, U) ed è più lunga di X, assurdo
+    2. supponiamo X ∉ LCS(T(n-1), U) => Esiste Y ∈ LCS(T(n-1), U) tale che |Y| > |X|, ma allora
+                  Y ∉ CS(T,U) edè più lunga di X, assurdo
+    3. simmetrico
+
+    Per calcolare la lunghezza:
+
+    DP[i][j] = {
+        0    i=0 or j=0
+        1+ DP[i-1][j-1] i>0, j>0, t_i = u_j
+        max(DP[i-1][j], DP[i][j-1]) i>0, j>0, t_i != u_j
+    }
+    DP[n][m] è la lunghezza della soluzione, per ricostruire la LCS è sufficiente paritire da
+    DP[n][m] e scorrerla al contrario per risalire le scelte ottimali fatte.
+    Se voglio calcolare solo la lunghezza è sufficiente memorizzare solo due righe
+
+    Complessità: data dal riempire la tabelle O(mn), per ricostruire la soluzione O(m+n)
+
+* Problema: STRING MATCHING APPROSSIMATO
+            Dati una stringa P (pattern) e una stringa T (testo). Un'occorrenza k-approssimata di
+            P in T è una copia di P in T in cui sono ammessi k "errori" tra caratteri, del tipo:
+            - sostituzione (i caratteri sono diversi)
+            - inserimento (un carattere di P non è incluso in T)
+            - cancellazione (un carattere di T non è incluso in P)
+            => trovare un'occorrenza k-approssimata per cui k sia minimo
+      Sia DP[0,...,m][0...n] una tabella di programmazione dinamica tale che DP[i][j] contiene il minimo
+      valore k per cui esiste un'occorrenza k-approssimata di P(i) in T(j) che termina nella posizione j.
+      DP[i][j] ={
+          0                               se i = 0
+          i                               se j = 0
+          min(DP[i-1][j-1] + iif(pi = tj, 0, 1), sostituzione o avanzamento su entrambi
+              DP[i-1][j],   inserimento
+              DP[i][j-1]     cancellazione se pi != tj
+          )
+     }
+     # La soluzione è data dal più piccolo valore DP[m][j] per 0<=j<=m
+* Problema: PRODOTTO CATENA DI MATRICI
+    Data una sequenza di n matrici compatibili due a due al prodotto, vogliamo calcolare il loro prodotto.
+    Il prodotto di matrici non è commutativo ma è associativo.
+    Poiché si basa sul prodotto tra scalari, vogliamo minimizzare il numero di moltiplicazioni scalari
+    per calcolare il prodotto. Infatti vale la pena preprocessare i dati per cercare la parentesizzazione
+    migliore per risparmiare tempo dopo nel calcolo vero e proprio
+
+    @ Una PARENTESIZZAZIONE P_i,j del prodotto Ai⋅A_i+1⋅...⋅Aj consiste:
+      * nella matrice Ai se i = j
+      * nel prodotto di due parentesizzazioni (P_i,k ⋅ Pk+1,j) se i < j
+      In questo caso il prodotto evidenziato è detto ultimo PRODOTTO.
+    @ una PARENTESIZZAZIONE OTTIMA è la parentesizzazione che richiede il minor numero di moltiplicazioni
+      scalari per essere completata, fra tutte le parentesizzazioni possibili.
+      Quante sono le parentesizzazioni possibili P(n)? L'ultimo prodotto può occorrere in n-1 posizioni
+      diverse. Fissato l'indice k dell'ultimo prodotto, abbiamo P(k) parentesizzazioni per A1⋅...⋅Ak,
+      P(n-k) per A_k+1⋅...⋅An
+      P(n) = {
+        1 se n = 1
+        n-1
+        ∑   P(k)*P(n-k)           Cresce come un esponenziale (numero di Catalan)!
+        k=1
+      }
+    Definiamo c_i-1 il numero di righe della matrice Ai
+             c_i il numero di colonne di Ai
+             A[i...j] il sottoprodotto Ai⋅...⋅Aj
+             P[i...j] una parentesizzazione per A[i...j] (anche non ottima)
+    # Teorema: data una parentesizzazione ottima P[i...j] di A[i...j], esiste un
+      ultimo prodotto a un indice k. I due sottoprodotti P[i...k] e P[k+1...j] sono
+      a loro volta ottime per i prodotti A[i...k] e A[k+1...j]
+
+      Dimostrazione:
+      Supponiamo che esista P'[i...k] con costo inferiore a P[i...k]. Allora P'[i...k]⋅P[k+1...j]
+      sarebbe una parentesizzazione di A[i...j] con costo inferiore a P[i...j], assurdo
+    # Sia DP[i][j] il numero minimo di moltiplicazioni scalari necessarie per calcolare il prodotto A[i...j]
+      * se i = j DP[i][j] = 0
+      * altrimenti
+          DP[i][j] = min_i<=k<j(DP[i][k] + DP[k+1][j] + ci-1*ck*cj) [ci-1*ck*cj è il costo dell'ultimo
+          prodotto].
+          Salvo in una matrice anche la posizione dell'ultimo prodotto della soluzione ottima in modo
+          da ricostruirla in O(n)
+    # Nota: è necessario riempire solo la diagonale superiore della matrice (i<=j)
+            Il valore di una cella dipende da valori che le stanno "sotto" e a "sinistra"
+            => Devo scorrere la matrice per diagonali, dalla diagonale principale "in su".
+    # Il risultato è DP[1][n]
+    # Complessità O(n^3) (O(n^2) celle da riempire, ognuna richiede O(n))
+
+* Problema: INSIEME INDIPENDENTE DI INTERVALLI PESATI
+    Dati n intervalli distinti aperti a destra della retta reale, dove all'intervalli i è associato
+    un profitto wi 1<=i<=n.
+    @ due intervalli i, j si dicono DISGIUNTI se bj<=ai oppure bi <= aj
+    Obiettivo: trovare un insieme indipendente di peso massimo, ovvero un sottoinsieme di intervalli
+    disgiunti tra loro tale che la somma dei loro profitti sia massima.
+
+    Per usare la programmazione dinamica è necessario preelaborare i dati ordinando gli intervalli
+    per tempo di fine crescente.
+      DP[i] rappresenta il profitto massimo ottenibile con i primi i intervalli
+      DP[i] = {
+        0                       se i = 0
+        max(DP[i-1], wi + max{DP[j] | j<i, bj <= ai}) se i > 0
+      }
+      complessità O(n^2)
+
+    # possiamo effettuare un'altra preelaborazione, pre-calcolando il predecessore j di i
+      dove i<j è il massimo indice tale che bj <= ai, se non esiste è 0
+
+      DP[i] = {
+        0 se i = 0
+        max(DP[i-1], wi + DP[pred[i]]) se i > 0
+      }
+      Costo O(n)
+      Come calcolare i precedenti? Soluzione banale O(n^2)
+        -> posso utilizzare la ricerca binaria O(nlog(n)) [uguale all'ordinamento]
+      => costo algoritmo O(nlogn);

@@ -1,0 +1,170 @@
+### STRUTTURE DATI SPECIALI ###
+
+# CODE CON PRIORITÀ
+Una coda con priorità è una struttura dati astratta, simile a una coda in cui ogni elemento possiede
+una sua "priorità"
+* Min-priority queue: estrazione per valori crescenti di priorità
+* Max-priority queue: estrazione per valori decrescenti di priorità
+
+Operazioni:
+- inserimento
+- estrazione minimo/massimo
+- aggiornamento priorità decremento/incremento
+
+Implementazioni:
+                Lista/vettore non ordinato Lista ordinata   Vettore ordinato  Albero RB   Vettore heap
+min()                   O(n)                    O(1)        O(1)              O(log(n))   O(1)
+deleteMin()             O(n)                    O(1)        O(1)              O(log(n))   O(log(n))
+insert()                O(1)                    O(n)        O(n)              O(log(n))   O(log(n))
+decrease()              O(n)                    O(n)        O(log(n))         O(log(n))   O(log(n))
+
+Vettore heap: struttura dati speciale che associa i vantaggi di un albero (esecuzione in tempo O(log(n)))
+              e di un vettore (memorizzazione efficiente)
+
+@ ALBERO BINARIO PERFETTO
+  * Tutte le foglie hanno la stessa profondità h
+  * I nodi interni hanno tutti grado 2
+  * Dati n nodi, l'altezza è h=⌊log(n)⌋
+  * Data l'altezza h, il numero di nodi è 2^(h+1)-1
+
+@ ALBERO BINARIO COMPLETO
+  * Tutte le foglie hanno profondità h o h-1
+  * Tutti i nodi a livello h sono "accatastati" a sinistra
+  * Tutti i nodi interni hanno grado 2, eccetto al più uno
+  * Dato il numero di nodi n, ha altezza h=⌊log(n)⌋
+
+@ ALBERO BINARIO MAX-HEAP
+  Un albero binario completo è un albero max-heap sse il valore memorizzato in un nodo è maggiore dei
+  valori memorizzati nei suoi figli.
+
+  Un albero heap non impone una relazione di ordinamento totale fra i figli di un nodo ma solo un
+  ordinamento parziale:
+  * riflessivo: n <= n
+  * antisimmetrico: se n<=m e m<=n => n=m
+  * transitivo: n<=m, m<=k => n <=k
+  Nozione più debole di un ordinamento totale ma più semplice da costruire
+
+  Un albero completo può essere memorizzato con un vettore:
+  root: 1, p(i) = ⌊i/2⌋, l(i) = 2*i, r(i) = 2*i +1
+  => proprietà max-heap su vettore: A[i] <= A[l(i)],A[r(i)]
+
+@ HEAPSORT: Composto da tre funzioni:
+  - maxHeapRestore(): ripristina la proprietà max-heap
+  - heapBuild(): costruisce un max-heap a partire da un vettore non ordinato
+  - heapsort(): ordina un max-heap in place
+
+  maxHeapRestore: dati un vettore A e un indice i, tale che gli alberi con radici l(i) e r(i) sono max-heap
+                  È possibile che A[i] sia minore di l(i) o r(i), va sistemato:
+                    Se è così scambio A[i] con il maggiore tra A[r[i]] e A[l[i]], quindi riduco al problema
+                    all'albero radicato nel nuovo nodo che ho spostato
+                  Complessità O(log(n)) perché tutte le operazioni si svolgono lungo un percorso radice-foglia
+                  Dimostrazione correttezza per induzione sull'altezza:
+                  h=0)      1 solo nodo rispetta la proprietà max-heap
+                  k<h => h) 1.A[i] >= A[l[i]], A[i] >= A[r[i]] è già un max_heap
+                            2.A[i] < A[l(i)], A[l(i)] >= A[r(i)]
+                              Scambio A[i], A[l(i)]. Il sottoalbero destro rimane inalterato.
+                              Applica max_heap_restore sul sottoalbero destro, correttamente per ipotesi in
+                              quanto di altezza minore di h. Poichè la proprietà vale anche per la radice,
+                              l'algoritmo è corretto.
+  heapBuild: dato un vettore A[1..n]. Tutti i nodi A[⌊n/2⌋+1...n] sono foglie dell'albero, quindi heap di
+              un elemento. Attraverso i restanti nodi da ⌊n/2⌋ a 1 applicando maxHeapRestore su ognuno
+              Correttezza: Invariante di ciclo:
+              All'inizio dell'i-esima iterazione, i nodi [i+1...n] sono radici di un maxHeap
+              *INIZIALIZZAZIONE All'inizio i=⌊n/2⌋, vero, infatti se ⌊n/2⌋+1 non fosse una foglia, avrebbe
+                almeno un figlio sinistro 2⌊n/2⌋+2 >= n+1, assurdo. Analogamente per tutti gli indici
+                successivi...
+              * CONSERVAZIONE Supponiamo vera la condizione prima dell'i-esimo ciclo.
+                È possibile applicare maxHeapRestore ad i perchè 2i < 2i+1 < n sono entrambi radici di uno
+                heap => al termine dell'iterazione [i...n] sono radici di uno heap
+              * CONCLUSIONE: i=0 => 1 è radice di uno heap
+
+              Complessità: O(n*log(n)), ma in realtà lo eseguo un numero decrescente di volte su heap di
+              dimensione crescente...
+                      ⌊n⌋   nr.volte * altezza
+              T(n) =   Σ    n/2^(h+1)* h <= n = O(n)
+                      h=1
+heapsort: Dopo che ho creato l'heap il massimo si trova in cima. Lo scambio con l'ultimo. Quindi chiamo
+          la maxHeapRestore passando come dimensione i-1 [itero per i da n a 2]
+                        n
+          Complessità:  Σ log(i) + ϴ(n) = ϴ(n*log(n))
+                       i=2
+
+@ VETTORI MIN-HEAP
+  Ogni elemento ha una priorità, un valore e una posizione
+  * insert: metto l'elemento in fondo e risalgo facendo scambi finché ha una priorità minore di quella
+            del padre. O(log(n))
+  * min: leggo A[1] O(1)
+  * deleteMin: Scambio A[1] con A[dim], quindi applico minHeapRestore sulla radice 1 con dimensione n-1
+                O(log(n))
+  * decrease: risalgo facendo scambi finché ha una priorità minore di quella del padre. Devo sapere la
+              posizione dell'elemento. o(log(n))
+  Poichè tutte le operazioni che modificano lo heap sistemano la proprietà heap lungo un cammino
+  radice-foglia, oppure nodo-radice e l'altezza è ⌊log(n)⌋, il costo di tali operazioni è O(log(n))
+
+# INSIEMI DISGIUNTI Merge-Find Set
+  In alcune applicazioni è necessario gestire una collezione di insiemi disgiunti S={S1,...,Sn}:
+  * ∀ i,j  i≠j => Si ∩ Sj = ∅
+  * ∪ Si = S
+  Es. componenti connesse di un grafo
+  Operazioni consentite:
+    * Creare n insiemi disgiunti, ognuno composto da un solo elemento
+    * Unire due insiemi
+    * Identificare l'insieme a cui appartiene un elemento
+
+  § Rappresentate: ogni insieme è identificato da un rappresentante univoco
+                   Il rappresentante di Si è un membro qualunque di Si
+                   Le operazioni di ricerca del rappresentante su uno stesso insieme devono restituire
+                   sempre lo stesso oggetto
+                   Solo in caso di unione con un altro insieme il rappresentante può cambiare.
+
+                   Due elementi appartengono allo stesso insieme sse hanno lo stesso rappresentante
+  Memorizziamo gli interi 1..n e assumiamo che l'associazione numero-oggetto sia memorizzata da qualche
+  parte
+  find(x) trova il rappresentante di x
+  merge(x,y) unisce gli insiemi che contengono x e y
+  Applicazioni: Determinare le componenti connesse di un grafo non orientato dinamico
+              [per ogni nodo aggiungo gli adiacenti alla sua cc] -> se vengono aggiunti archi posso gestire
+              le cc facilmente O(n+m) se la merge costa O(1)
+
+
+  Implementazione:
+  @ basata su insiemi di liste: ogni elemento ha un puntatore al successivo e al rappresentante.
+    Nella merge si uniscono le due liste modificando i puntatori al rappresentate della lista "appesa"
+    Nel caso pessimo per n operazioni [aggiungo la lista lunga a quella corta ] O(n^2)
+    => costo ammortizzato O(n)
+    Find O(1)
+  @ basata su insiemi di alberi: ogni nodo contiene un puntatore al padre.
+    La radice è il rappresentante dell'insieme e ha un puntatore a sé stessa
+    Nella merge "aggancio" la radice di y a x costo O(1)
+    Find risale la lista dei padri fino alla radice, che è il rappresentante. Nel caso pessimo
+    O(n) [quando l'albero degenera in una lista]
+
+  § Esistono tecniche euristiche, ossia che risolvono il problema più velocemente senza cambiare le
+    caratteristiche dell'algoritmo
+  @ Euristica sul peso per le liste: agganciare la lista più corta a quella più lunga, lunghezza
+    memorizzata da qualche parte. Tramite analisi ammortizzata si vede che n-1 operazioni merge hanno
+    costo O(nlog(n)) => costo ammortizzato O(log(n))
+  @ Compressione dei cammini, euristica sul rango per alberi
+    * Euristica sul rango: @ rango = altezza del sottoalbero associato al nodo = numero di archi del
+      cammino più lungo fra x e una foglia sua discendente.
+      Ogni nodo mantiene informazioni sul proprio rango.
+      Si aggancia l'albero con rango minore a quello con rango maggiore, mantenendo il rango inalterato.
+      Se hanno rango uguale è indifferente, il rango aumenta di 1.
+      Complessità:
+      # Teorema: Un albero MFset con radice r ottenuto tramite euristica sul rango, ha almeno
+                 2^rank(r) nodi
+      # Corollaro: Un albero MFSET con radice r e n nodi ha altezza inferiore a log(n)
+                  n >= 2^rank(r) ⟺ log(n) >= rank(r)
+      => find(x) ha costo O(log(n))
+    * Euristica di compressione dei cammini
+      L'albero viene appiattito in modo che ricerche successive di x possano essere svolte in
+      O(1)
+
+    # Quando si utilizzano entrambe le euristiche:
+      * Il rango non è l'altezza del nodo ma il limite superiore all'altezza del nodo
+        Infatti le operazioni di compressione non ricalcolano il rango in quanto troppo difficile e
+        in ogni caso non necessario.
+      * Complessità: Costo ammortizzato di m operazioni di merge-find in un insieme di n elementi è
+        O(m*α(n)) dove α è la funzione inversa di Ackermann che cresce molto lentamente, <=5 per
+        valori n<=2^2^16
+        => costo ammortizzato O(1) anche per la find
