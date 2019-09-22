@@ -122,17 +122,17 @@ a) Se f è un flusso in G e g è un flusso in Gf, allora f+g è un flusso in G.
     => Dal momento in cui un nodo è critico al momento in cui può tornare a essere critico, si è
         allungato di almeno due passi.
         La lunghezza massima di un cammino fino a u, tenendo conto che poi si deve ancora seguire
-        l'arco (umv) è V-2
+        l'arco (u,v) è V-2
         * Quindi un arco può diventare critico al massimo (V-2)/2 = V/2-1 volte
-          [ /2 perchè aumenta almeno di 2 ogni volta ]
-        * Poichè ci sono E archi, che possono diventare critici O(V) volte, il numero massimo di
+          [ /2 perché aumenta almeno di 2 ogni volta ]
+        * Poiché ci sono E archi, che possono diventare critici O(V) volte, il numero massimo di
           flussi aumentanti è O(VE)
 
 # Dimostrazione correttezza dell'algoritmo
 @ Un taglio (S,T) della rete di flusso G=(V,E,s,t,c) è una partizione di V in S e T=V-S tale che s ∈ S
   t ∈ T.
 
-@ La capacità c(S,T) attraverso il tagli (S,T) è pari a ∑c(u,v) | u ∈ S, v ∈ T
+@ La capacità c(S,T) attraverso il taglio (S,T) è pari a ∑c(u,v) | u ∈ S, v ∈ T
 @ Se f è un flusso in G, il FLUSSO NETTO (Flusso del taglio) F(S,T) attraverso (S,T) è:
   F(S,T) = ∑f(u,v)  | u ∈ S, v ∈ T
 
@@ -161,6 +161,7 @@ a) Se f è un flusso in G e g è un flusso in Gf, allora f+g è un flusso in G.
 
   # Teorema:
     Le seguenti 3 affermazioni sono equivalenti:
+    1. f è un flusso massimo
     2. Non esiste un cammino aumentante per G_f
     3. Esiste un taglio minimo (S,T) tale che C(S,T) = |f|
 

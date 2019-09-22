@@ -51,7 +51,7 @@ Metodi:
           b) altrimenti risalgo finché trovo un antenato per cui mi trovo nel suo sottoalbero destro.
 + insert(k, v, u) => 0) se u == Nil => u = new Tree(k, v)...
                      a) se la k == u.key => u.value = v
-                     b) altrimenti se k<u.key() => insert(k, v, u.left)
+                     b) altrimenti se k<u.key() => insert(k, v, u.left), altrimenti insert(k, v, u.right)
 + remove => a) il nodo non ha figli => lo elimino e basta [non crea problemi]
             b) il nodo ha un solo figlio => attacco il figlio al padre del nodo [mantenendo l'ordinamento]
             c) il nodo ha 2 figli => trovo il successore di u [min sottoalbero destro] che non ha figlio sinistro
@@ -64,7 +64,7 @@ Costi: tutte le operazioni sono confinate ai nodi posizionati lungo un cammino s
 dalla radice ad una foglia => Tempo O(h) [ CASO PESSIMO h = n[lista], OTTIMO h = log(n) [bilanciato]]
 
 ### ALBERI BINARI DI RICERCA BILANCIATI ###
-Si può dimostrare che se gli inserimenti sono in oridne casuale l'altezza media è log(n)
+Si può dimostrare che se gli inserimenti sono in ordine casuale l'altezza media è log(n)
 In realtà si utilizzano tecniche per mantenere l'albero bilanciato.
 
 @ FATTORE DI BILANCIAMENTO: β(v) di un nodo v è la massima differenza di altezza tra i

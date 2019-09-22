@@ -29,7 +29,7 @@ Per problemi troppo difficili bisogna rinunciare a qualcosa tra:
     Se k O O(n^k), allora # = max{n,k,a1,...,an} = O(n^k)
     => la soluzione basata su DP ha complessità O(n^(k+1)) => debolmente ℕℙ-completo
 
-@ Un algoritmo che rislve un certo problema R, per qualsiasi dato I di ingresso,
+@ Un algoritmo che risolve un certo problema R, per qualsiasi dato I di ingresso,
   in tempo p(#,d) con p funzione polinomiale in # e d, ha complessità PSEUDO-POLINOMIALE
 
 # PARTITION - partizione in due sottoinsiemi di somma uguale
@@ -77,7 +77,7 @@ Per problemi troppo difficili bisogna rinunciare a qualcosa tra:
             Valgono le disuguaglianze triangolari dij <= 2 <= dik + dkj
 
 
-      @ LOWER BUOND PER Δ-TSP
+      @ LOWER BOUND PER Δ-TSP
         * considerato un circuito hamiltoniano e cancellato un arco si ottiene un albero di copertura
         * # TEOREMA qualunque circuito hamiltoniano ha costo c(π) superiore al costo di un mst
             DIM: supponiamo che c(π) <= mst. Allora togliendo un arco otterrei un mst di peso inferiore

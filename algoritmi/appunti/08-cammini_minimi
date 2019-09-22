@@ -15,7 +15,7 @@ Possibilità:
 Si rappresentano i cammini minimi come un albero dei cammini minimi radicato in s
 contenente tutti i nodi di V.
 Si noti che è un albero in quanto non esiste al più un cammino da un nodo a un altro, quello minimo.
-Questo fatto può essere sfruttato per definire una sottostruttura ottima.
+Questo fatto può essere sfruttato per definire una sotto-struttura ottima.
 
 Una soluzione ammissibile può essere descritta da un albero di copertura T radicato in s e da un vettore
 di distanza d, i cui valori d[u] rappresentano il costo del cammino da s a u in T.
@@ -44,7 +44,7 @@ Dimostrazione
 
 Algoritmo:
   d[s] = 0, d[x] = +∞
-  Finchè esiste (u,v) t.c. d[u] + G.w(u,v) < d[v]:
+  Finché esiste (u,v) t.c. d[u] + G.w(u,v) < d[v]:
     d[v] = d[u] + w(u,v)
     p[v] = u
 Algoritmo generico

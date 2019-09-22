@@ -53,9 +53,10 @@ essere raggiunti da quel nodo
            genera una foresta di alberi depth-first. Basata su stack implicito o esplicito
            [ se il il grafo è molto grande ho una profondità di ricorsione limitata ].
            Complessità O(n + m)
+
            Appicazioni:
            -- componenti connesse su grafo non orientato
-           @ RAGGIUNGIBILITÀ: un nodo v è raggiungibile da un nodo v se esiste almeno un cammino da u a v.
+           @ RAGGIUNGIBILITÀ: un nodo v è raggiungibile da un nodo u se esiste almeno un cammino da u a v.
            @ un grafo NON ORIENTATO è CONNESSO sse ogni suo nodo è raggiungibile da ogni altro
              suo nodo.
              @ un grafo G' è una COMPONENTE CONNESSA di G sse G' è un sottografo CONNESSO e MASSIMALE di G.
@@ -82,7 +83,7 @@ essere raggiunti da quel nodo
               Ogni volta che passo su un nodo non visitato aggiorno il discovery time.
               Una volta terminata la visita ricorsiva a partire da tale nodo aggiorno il suo finish time.
               [ad ogni chiamata time viene incrementato]. Data tale visita DFS e una coppia di nodi u, v:
-              + se gli intervalli [dt[u], ft[u]], [dt[v], ft[v]], sono non sovrapposti, allorau, v non sono
+              + se gli intervalli [dt[u], ft[u]], [dt[v], ft[v]], sono non sovrapposti, allora, v non sono
                 discendenti uno dell'altro.
               + se il primo include il secondo, v è un discendente di u.
               + se il secondo include il primo, v è un antenato di v.
@@ -140,7 +141,7 @@ essere raggiunti da quel nodo
                 ft(C) > ft(C').
               @ COROLLARIO: Siano Cu e Cv due SCC distinte di G. Se c'è un arco (u, v) ∈ Et tale che
                 u ∈ Cu e v ∈ Cv, allora ft(Cu) < ft(Cv).
-              Perciò se Cu e Cv sono connesse da un arco (u, c) ∈ Et,
+              Perciò se Cu e Cv sono connesse da un arco (u, v) ∈ Et,
                 dal corollario ft(Cu) < ft(Cv).
                 dall'algoritmo, la visita di Cv inizierà prima della visita di Cv
               Non esistono cammini da Cv a Cu in Gt (altrimenti avrei un ciclo)

@@ -73,7 +73,7 @@ Es. Ordinamento
 
 * SOMMATORIA (SEQUENZA DI ALGORITMI)
     f1 = O(g1), f2 = O(g2) => f1 + f2 = O(max(g1, g2))
-    f1 = Ω(g1), f2 = Ω(g2) => f1 + f2 = Ω(min(g1, g2))
+    f1 = Ω(g1), f2 = Ω(g2) => f1 + f2 = Ω(min(g1, g2)) [??? max ???]
 
     Infatti f1 <=c1*g1, f2 <= c2*g2 ->
             f1 + f2 <= c1*g1 + c2*g2 <= (c1+c2) * max(g1, g2)
@@ -141,7 +141,7 @@ in un incremento successivo, ad ogni operazione assegno costo ammortizzato 2.
   dal costo effettivo + la ddp tra l'n-esima operazione e la prima.
 Es. Contatore binario. Il valore della funzione di potenziale è dato dal numero di bit 1 presenti nel
 contatore.
-Sia t il numero di bit 1 incontrati a partire da quello meno significativo. Poichè ad ogni incremento
+Sia t il numero di bit 1 incontrati a partire da quello meno significativo. Poiché ad ogni incremento
 tutti questi andranno a 0 e si aggiungerà un solo 1:
 * il costo effettivo è t + 1
 * la variazione di potenziale è 1 - t

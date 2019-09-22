@@ -66,7 +66,7 @@ il risultato].
 
   DP[i] = {
     0                                    i=0
-    min1<=i<=n{DP[i-t[j]] | t[j]<=i} + 1 i>0
+    min1<=i<=n{1 + DP[i-t[j]] | t[j]<=i} + 1 i>0
   }
   Complessità O(nR)
 
@@ -232,7 +232,7 @@ il risultato].
         § ALGORITMO DI KRUSKAL
           Idea: ingrandire sottoinsiemi disgiunti di un mst connettendoli tra loro fino a ottenere
           l'albero complessivo. Si individua un arco sicuro tra tutti gli archi che connettono due
-          componenti connesse [scelta greedy]. Come struttura dati si utilizza un MFS
+          componenti connesse [scelta greedy]. Come struttura dati si utilizza un MFSET
           Input: Vettore di archi
           * Ordino gli archi per perso crescente
           * Finchè ho ancora archi da visitare e ancora archi da aggiungere

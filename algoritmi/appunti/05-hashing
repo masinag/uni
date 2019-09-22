@@ -125,8 +125,8 @@ di ispezione una qualsiasi delle m! permutazioni.
 Tecniche più diffuse:
 * Ispezione lineare: H(k, i) = (H1(k)+ h*i) mod m => determinata dal primo elemento, m seq. di ispezione
   possibile.
-  PROBLEMA: agglomerazione primaria: tendono a formarsi lunghe sott-sequenze occupate che tendono a
-  diventare sempre più lunghe, perchè uno slot vuoto preceduto da i slot pieni viene riempito con
+  PROBLEMA: agglomerazione primaria: tendono a formarsi lunghe sotto-sequenze occupate che tendono a
+  diventare sempre più lunghe, perché uno slot vuoto preceduto da i slot pieni viene riempito con
   probabilità (i+1) / m => crescono i tempi medi di ricerca e cancellazione
 * Ispezione quadratica: H(k, i) = (H1(k) + h*i^2) mod m => le ispezioni successive alla prima hanno
   un offset che cresce quadraticamente nel numero di ispezione.
@@ -134,9 +134,9 @@ Tecniche più diffuse:
   (AGGLOMERAZIONE SECONDARIA). Il grosso problema è che questa tecnica non genera una permutazione.
   Al massimo m seq.di ispezione distinte.
 * Doppio hashing: H(k, i) = (H1(k) + i*H2(k)) mod m
-  Due funz. di hashing: H1 prima ispezione, H2 offset delle ispezioni successive
-  Ogni casella da origine a m possibili ispezione: m?2 permutazioni
-  Per garantire una permutazione comleta, H2 deve essere relativamente primo con m
+  Due funzioni di hashing: H1 prima ispezione, H2 offset delle ispezioni successive
+  Ogni casella da origine a m possibili ispezione: m² permutazioni
+  Per garantire una permutazione completa, H2 deve essere relativamente primo con m
 
 ### Cancellazione: non è possibile semplicemente sostituire la chiave da cancellare con un Nil
     => sostituito con un valore speciale deleted:
@@ -146,7 +146,7 @@ Svantaggio: il tempo di ricerca non dipende più solo da alpha ma anche dal nume
 
 Complessità: al crescere di alpha, l'indirizzamento aperto cresce molto rapidamente, tendendo a m.
               Soluzione: raddoppio la dimensione al superamento di una certa soglia, riducendo il fattore
-              di carico. Devo reinserire tutte le chiavi in posizioni potenzialmente diverse( faccio mod 2m).
+              di carico. Devo reinserire tutte le chiavi in posizioni potenzialmente diverse (faccio mod 2m).
               In questo modo rimuovo tutti gli elementi deleted.
               Il costo ammortizzato è sempre costante.
               Nelle implementazioni reali t_α ~ 0.5

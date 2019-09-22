@@ -74,7 +74,7 @@ Vettore heap: struttura dati speciale che associa i vantaggi di un albero (esecu
                 almeno un figlio sinistro 2⌊n/2⌋+2 >= n+1, assurdo. Analogamente per tutti gli indici
                 successivi...
               * CONSERVAZIONE Supponiamo vera la condizione prima dell'i-esimo ciclo.
-                È possibile applicare maxHeapRestore ad i perchè 2i < 2i+1 < n sono entrambi radici di uno
+                È possibile applicare maxHeapRestore ad i perché 2i < 2i+1 < n sono entrambi radici di uno
                 heap => al termine dell'iterazione [i...n] sono radici di uno heap
               * CONCLUSIONE: i=0 => 1 è radice di uno heap
 
@@ -98,7 +98,7 @@ heapsort: Dopo che ho creato l'heap il massimo si trova in cima. Lo scambio con 
                 O(log(n))
   * decrease: risalgo facendo scambi finché ha una priorità minore di quella del padre. Devo sapere la
               posizione dell'elemento. o(log(n))
-  Poichè tutte le operazioni che modificano lo heap sistemano la proprietà heap lungo un cammino
+  Poiché tutte le operazioni che modificano lo heap sistemano la proprietà heap lungo un cammino
   radice-foglia, oppure nodo-radice e l'altezza è ⌊log(n)⌋, il costo di tali operazioni è O(log(n))
 
 # INSIEMI DISGIUNTI Merge-Find Set

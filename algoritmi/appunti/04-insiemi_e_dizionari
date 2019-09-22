@@ -33,5 +33,5 @@ Utilizzi: chrome contiene un db degli URL dei siti con malware(~650 mila)
 @implementazione:
   n oggetti, vettore booleano di m bit inizializzatoa false
   k funzioni di hash h1,..., hk  : U -> {0,...,m-1}
-  all'inserimento "accendo" k bit dati dagli ahsk calcolati con le k funzioni della chiave
+  all'inserimento "accendo" k bit dati dagli hash calcolati con le k funzioni della chiave
   alla ricerca verifico che tutti gli indici dati dai k hash siano a 1

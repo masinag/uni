@@ -57,7 +57,7 @@ legati: se ne esistesse uno risolvibile in tempo polinomiale, allora lo sarebber
   Dato un insieme V contenente n variabili
   * un letterale è una variabile v oppure la sua negazione
   * una clausola è una disgiunzione di letterali
-  * una formula in forma normale congiuntiva + una congiunzione di clausole
+  * una formula in forma normale congiuntiva è una congiunzione di clausole
 
   Decisione: data una formula in CNF, decidere se esiste una assegnazione di valori di verità che
   renda l'espressione vera. [la formula è SODDISFACIBILE]
@@ -131,7 +131,7 @@ restituisce s su un'istanza x se e solo se (x,s) ∈ R.
   Quindi per quanto abbiamo visto lo sono anche 3-SAT, INDEPENDENT-SET, VERTEX-COVER
 
 Altri problemi ℕℙ-completi:
-  * Clique (CRICCA) dato n grafo non orientato e un intero k, esiste un sottoinsieme di k nodi tutti
+  * Clique (CRICCA) dato un grafo non orientato e un intero k, esiste un sottoinsieme di k nodi tutti
     mutualmente adiacenti?
   * TSP - Commesso viaggiatore date n città, le distanze tra esse e un intero k, è possibile partire da
     una città, attraversare ogni città esattamente una volta e tornare alla città di partenza,
@@ -143,4 +143,3 @@ Altri problemi ℕℙ-completi:
   * Partizione insieme in due insiemi di somma uguale
   * Dato un insieme, esiste un sottoinsieme di somma k
   * Circuito hamiltoniano
-  

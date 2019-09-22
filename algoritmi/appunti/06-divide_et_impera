@@ -35,7 +35,7 @@ Tre fasi:
       ∀i ∈[j+1...  end]: A[i] >= p
       A[j] = p. L'indice j viene calcolato opportunamente
   IMPERA
-  * ordina i due sottovettori A[start...j-1], A[j+1...  end] richiamando Quicksort
+  * ordina i due sotto-vettori A[start...j-1], A[j+1...  end] richiamando Quicksort
   COMBINA
   * nulla, il vettore è già ordinato
 
@@ -45,7 +45,7 @@ Tre fasi:
                 * Partizionamento peggiore:
                   Il vettore di dimensione n viene diviso in due sotto-vettori grandi 0 e n-1
                   T(n) = T(0) + T(n-1) + ϴ(n) = T(n-1) + ϴ(n) = ϴ(n²)
-                  Si verifica quando il vettore è ordinato in modo crescente o descescente.
+                  Si verifica quando il vettore è ordinato in modo crescente o decrescente.
                 * Partizionamento migliore:
                   Divido il vettore in due sotto-vettori di dimensione n/2
                   T(n) = 2T(n/2) + ϴ(n) = ϴ(n*㏒(n))

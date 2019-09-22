@@ -30,7 +30,7 @@ Quelli migliori hanno complessità O(nlog(n)), alcuni Ω(n) in casi speciali (gi
 * Pigeonhole Sort:
       Se i valori non sono interi ma record associati a una chiave da ordinare
       Inseriamo gli elementi in un vettore di liste concatenate, infondo alla lista indicata dalla chiave
-      Quindi Ricostruisco A come nel counting sort.
+      Quindi ricostruisco A come nel counting sort.
       O(n+k)
 * Bucket sort: Se i valori reali sono uniformemente distribuiti nell'intervallo [0,1) [oppure normalizzati
   nell'intervallo ma uniformemente distribuiti]
@@ -43,5 +43,5 @@ Quelli migliori hanno complessità O(nlog(n)), alcuni Ω(n) in casi speciali (gi
   chiave.
   Stabili: Insertion, Merge, pigeonhole
   Non stabili: Heap, quick
-  Qualunque algoritmo può essere reso stabile, associando a ogni elmento la posizione iniziale e ordinando
+  Qualunque algoritmo può essere reso stabile, associando a ogni elemento la posizione iniziale e ordinando
   per valore, indice

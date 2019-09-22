@@ -90,7 +90,7 @@ funzioni hashing) ma ai dati di output:
 
   * Supponiamo di avere un algoritmo black-box che ritorni la mediana in O(n).
     Possiamo usarlo per risolvere il problema della selezione utilizzandolo per fare in modo
-    di dividere esattamente il problema usando la mediana come pivot. -> deterministico O(n)
+    di dividere esattamente il problema della selezione usando la mediana come pivot -> deterministico O(n)
 
   * Possiamo "rilassare" le pretese. Supponendo di avere un algoritmo che restituisca un valore che
     dista al più 3/10 dalla mediana, potremmo utilizzarlo comunque per la selezione ottenendo O(n)
@@ -109,4 +109,4 @@ funzioni hashing) ma ai dati di output:
                   La mediana delle mediane è maggiore o uguale di (n/5)/2 elementi, ognuno >= di almeno
                   3 elementi, quindi di 3 * n/10 elementi
       - Nel caso pessimo, devo controllare l'altra parte, lunga 7/10n
-        => T(n) = T(n/5) + T(7/10n) + 11/5 n
+        => T(n) = T(n/5) + T(7/10n) + 11/5 n = O(n)

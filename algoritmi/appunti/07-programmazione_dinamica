@@ -1,5 +1,5 @@
 ### PROGRAMMAZIONE DINAMICA
-Basato su divide et impera, utilizzato quando lo stesso sottoproblema deve essere risolto molte volte.
+Basato su divide et impera, utilizzato quando lo stesso sotto-problema deve essere risolto molte volte.
 In questo caso la soluzione viene memorizzata in una tabella indicizzabile in O(1) in modo da
 risolvere ogni sotto-problema una volta sola.
 
@@ -78,11 +78,11 @@ risolvere ogni sotto-problema una volta sola.
     pseudo polinomiale T(n) = O(n*2^k)
 
   * Soluzione con memoization.
-    Visto che la complessità è pseudo-polinomiale, conviene usare la versione ricorsiva? No perchè
+    Visto che la complessità è pseudo-polinomiale, conviene usare la versione ricorsiva? No perché
     T(n) = 2T(n-1) +1 = O(2^n) [ conviene se 2^n << n*C ]
     Osserviamo però che non tutti gli elementi della matrice sono utili, la maggior parte vengono
-    calcolati inutilmente => posso utilizzare la versione ricorsiva evitando di ricalcolare i sottoproblemi
-    già risolti (MEMOIZATION). In realtà non ho un vantaggio perchè la tabella deve essere comunque
+    calcolati inutilmente => posso utilizzare la versione ricorsiva evitando di ricalcolare i sotto-problemi
+    già risolti (MEMOIZATION). In realtà non ho un vantaggio perché la tabella deve essere comunque
     inizializzata. Posso invece utilizzare una hash table ottenendo un costo pari a O(min(2^n, n*C))
 
 * Problema: Zaino senza limiti di scelta: un oggetto può essere preso più volte rispettando i vincoli
@@ -94,7 +94,7 @@ risolvere ogni sotto-problema una volta sola.
                         }
             L'algoritmo converge comunque perché o l'indice o la capacità diminuiscono sempre
             # Si può tuttavia semplificare la formula riducendo lo spazio occupato ϴ(C), Complessità
-              sempre O(nC)[non è detto che le debba riempire tutte] perchè per ogni casella devo
+              sempre O(nC)[non è detto che le debba riempire tutte] perché per ogni casella devo
               scorrere tutti gli n oggetti.
             DP[c] = {
                 0 se c==0
@@ -120,7 +120,7 @@ risolvere ogni sotto-problema una volta sola.
     * Brute force -> per ogni sottosequenza di T controllo se è anche di U ->nr. di sottoseq è 2^n
       => Complessità 𝛉(2^n(n+m)) [verficare se è sottoseq. di U]
 
-    @ Data una seqquenza T, il prefisso T(i) è una sequenza data dai primi i caratteri di T
+    @ Data una sequenza T, il prefisso T(i) è una sequenza data dai primi i caratteri di T
 
     Possiamo scrivere la soluzione in maniera ricorsiva
     # se gli ultimi caratteri sono uguali, li considero e riduco il problema ai caratteri precedenti
@@ -135,15 +135,15 @@ risolvere ogni sotto-problema una volta sola.
     Teorema sottostruttura ottima:
     Date due sequenze T=(t1,..., tn), U=(u1,...um), sia X = (x1,..., xk) una LCS di T e U. Allora:
     1. se tn == um => xk = tn = um e X(k-1) ∈ LCS(T(n-1), U(m-1))
-    2. se tn != um  xk != tk => X ∈ LCS(T(n-1), U)
-    3. se tn != um  xk != uk => X ∈ LCS(T, U(m-1))
+    2. se tn != um  xk != tn => X ∈ LCS(T(n-1), U)
+    3. se tn != um  xk != um => X ∈ LCS(T, U(m-1))
 
     Dimostrazione:
     1. supponiamo xk != tn = um. Allora (X ⊕ xk) ∈ CS(T, U) e |Y| > |X|, assurdo
        supponiamo che X(k-1) ∉ LCS(T(n-1), U(m-1)) >= ∃ Y ∈ LCS(T(n-1), U(m-1)) tale che
                   |Y| > |X| ma allora Y ⊕ tn ∈ CS(T, U) ed è più lunga di X, assurdo
     2. supponiamo X ∉ LCS(T(n-1), U) => Esiste Y ∈ LCS(T(n-1), U) tale che |Y| > |X|, ma allora
-                  Y ∉ CS(T,U) edè più lunga di X, assurdo
+                  Y ∉ CS(T,U) ed è più lunga di X, assurdo
     3. simmetrico
 
     Per calcolare la lunghezza:
@@ -196,7 +196,7 @@ risolvere ogni sotto-problema una volta sola.
       P(n) = {
         1 se n = 1
         n-1
-        ∑   P(k)*P(n-k)           Cresce come un esponenziale (numero di Catalan)!
+         ∑  P(k)*P(n-k)           Cresce come un esponenziale (numero di Catalan)!
         k=1
       }
     Definiamo c_i-1 il numero di righe della matrice Ai

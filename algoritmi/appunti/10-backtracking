@@ -61,7 +61,7 @@ Es. * elencare tutti i sottoinsiemi dell'insieme {1...n}
   1. Si prende il punto con ordinata minima. Fa parte dell'inviluppo convesso. Si ordinano i punti in base
   all'angolo formato dalla retta passante per il punto con ordinata minima e la retta orizzontale.
   Se ci sono punti con lo stesso angolo, considero solo quello più distante.
-  2. inserisci p1 nell'inviluppo corrente.
+  2. inserisci p1, p2 nell'inviluppo corrente.
      per tutti i punti da 3 a n. Siano ph, pj gli ultimi due punti inseriti nell'inviluppo.
      Se pi e p1 stanno dalla stessa parte del piano diviso dalla retta per ph e pj, inserisco pi
      nell'inviluppo. Altrimenti tolgo pj e ripeto il punto 2.
